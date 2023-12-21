@@ -1,0 +1,19 @@
+.DS_Store
+.idea
+*.ai
+*.log
+*.pdf
+*.psdt/
+npm-debug.log*
+Thumbs.db
+.vscode/
+*.sublime*
+dis
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+*.log*
+node_modules/
+
+# production
+/build
