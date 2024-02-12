@@ -1,6 +1,5 @@
 import FilterView from './view/filter-view.js';
-import SortView from './view/sort-view.js';
-import ContentView from './view/content-view.js';
+import BoardPresenter from './presenter/board-presenter.js';
 import { render } from './render.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
@@ -10,5 +9,6 @@ const filterElement = siteHeaderElement.querySelector('.trip-controls__filters')
 const contentElement = siteMainElement.querySelector('.trip-events');
 
 render(new FilterView(), filterElement);
-render(new SortView(), contentElement);
-render(new ContentView(), contentElement);
+
+const boardPresenter = new BoardPresenter();
+boardPresenter.init(contentElement);
