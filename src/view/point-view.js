@@ -1,6 +1,8 @@
 import { createElement } from '../render.js';
 
-const createPointTemplate = () => {
+const createPointTemplate = (point) => {
+  const { basePrice } = point;
+  console.log(point);
   return (`
     <li class="trip-events__item">
       <div class="event">
@@ -18,7 +20,7 @@ const createPointTemplate = () => {
           <p class="event__duration">30M</p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">20</span>
+          &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         <ul class="event__selected-offers">
@@ -43,8 +45,12 @@ const createPointTemplate = () => {
 }
 
 export default class PointView {
+  constructor(point) {
+    this.point = point;
+  }
+
   getTemplate() {
-    return createPointTemplate();
+    return createPointTemplate(this.point);
   }
 
   getElement() {
