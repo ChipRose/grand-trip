@@ -1,5 +1,6 @@
-import FilterView from './view/filter-view.js';
-import BoardPresenter from './presenter/board-presenter.js';
+import FilterView from './view/filter-view';
+import BoardPresenter from './presenter/board-presenter';
+import PointsModel from './model/points-model';
 import { render } from './render.js';
 
 const siteHeaderElement = document.querySelector('.page-header');
@@ -10,5 +11,7 @@ const contentElement = siteMainElement.querySelector('.trip-events');
 
 render(new FilterView(), filterElement);
 
+const pointsModel = new PointsModel();
 const boardPresenter = new BoardPresenter();
-boardPresenter.init(contentElement);
+
+boardPresenter.init(contentElement, pointsModel);
