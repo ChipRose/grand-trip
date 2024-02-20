@@ -3,6 +3,8 @@ import SortView from "../view/sort-view";
 import ListView from "../view/list-view";
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
+import { generatePoint } from "../mock/point";
+import '../util';
 import { render } from '../render'
 
 export default class BoardPresenter {
