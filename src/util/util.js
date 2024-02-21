@@ -1,3 +1,6 @@
+
+import dayjs from 'dayjs';
+
 // Функция из интернета по генерации случайного числа из диапазона
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
 const getRandomInteger = (a = 0, b = 1) => {
@@ -17,6 +20,13 @@ const getRandPartArray = (array) => {
   return newArray;
 }
 
-const getRandItemArray = (array) => (array[getRandomInteger(0, array?.length-1)]);
+const getRandItemArray = (array) => (array[getRandomInteger(0, array?.length - 1)]);
 
-export { getRandomInteger, getRandPartArray, getRandItemArray };
+const getRandomDate = () => {
+  const dateFrom = dayjs().set('d', getRandomInteger(0, 30)).set('M', getRandomInteger(0, 11)).set('h', getRandomInteger(0, 24)).set('m', getRandomInteger(0, 60));
+  const dateTo = dayjs(dateFrom).add(getRandomInteger(0, 3), 'day').add(getRandomInteger(0, 24), 'hour').add(getRandomInteger(0, 60), 'minute');
+
+  return { dateFrom, dateTo };
+};
+
+export { getRandomInteger, getRandPartArray, getRandItemArray, getRandomDate };

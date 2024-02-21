@@ -1,4 +1,4 @@
-import { getRandPartArray, getRandItemArray, getRandomInteger } from '../util';
+import { getRandPartArray, getRandItemArray, getRandomInteger, getRandomDate } from '../util/util';
 
 const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
@@ -83,16 +83,18 @@ const getItemsById = (array, itemId) => (
 const getOffersByType = (offerType) => (offersByType.find(({ type }) => type === offerType).offers);
 
 export const generatePoint = () => {
+  const date = getRandomDate();
   const type = getRandItemArray(types);
   const offers = getOffersByType(type);
+
   return ({
     id: '0',
     basePrice: getRandomInteger(200, 1000),
-    dateFrom: '2019-07-10T22:55:56.845Z',
-    dateTo: '2019-07-11T11:22:13.375Z',
+    dateFrom: date.dateFrom,
+    dateTo: date.dateTo,
     destination: destinations[getRandomInteger(0, destinations.length - 1)],
     type,
     offers,
-    isFavorite: false,
+    isFavorite: Boolean(getRandomInteger()),
   })
 }
