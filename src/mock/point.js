@@ -76,8 +76,8 @@ const offersByType = types.map((type) => {
   })
 });
 
-const getItemsById = (array, itemId) => (
-  itemId?.map((id) => array?.filter((item) => String(item.id) === String(id)))
+const getItemsById = ({array = offers, itemId}) => (
+  itemId?.map((id) => array?.find((item) => String(item.id) === String(id)))
 )
 
 const getOffersByType = (offerType) => (offersByType.find(({ type }) => type === offerType).offers);
@@ -85,7 +85,8 @@ const getOffersByType = (offerType) => (offersByType.find(({ type }) => type ===
 export const generatePoint = () => {
   const date = getRandomDate();
   const type = getRandItemArray(types);
-  const offers = getOffersByType(type);
+  const offersAvailable = getOffersByType(type);
+  const offersSelected = getItemsById({itemId:getRandPartArray(offersAvailable)});
 
   return ({
     id: '0',
@@ -94,7 +95,7 @@ export const generatePoint = () => {
     dateTo: date.dateTo,
     destination: destinations[getRandomInteger(0, destinations.length - 1)],
     type,
-    offers,
+    offers: offersSelected,
     isFavorite: Boolean(getRandomInteger()),
   })
 }

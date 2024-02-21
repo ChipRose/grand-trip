@@ -1,29 +1,30 @@
 import { createElement } from '../render.js';
 import { humanizePointDate, humanizePointTime, formatDurationTime } from '../util/point-util';
 
-const createOffersListBlock = (selectedOffers=[]) =>{
+const createOffersListBlock = (selectedOffers = []) => {
   return (
     selectedOffers?.length ?
       `<ul class="event__selected-offers">
-          <li class="event__offer">
-            <span class="event__offer-title">Order Uber</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">20</span>
-          </li>
+        ${selectedOffers.map(({ title, price }) => (
+        `<li class="event__offer">
+          <span class="event__offer-title">${title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${price}</span>
+        </li>`
+      )).join('')}
       </ul>`
-    : ''
+      : ''
   )
 }
 
 const createPointTemplate = (point) => {
-  const { basePrice, dateFrom, dateTo, type, destination, isFavorite } = point;
+  const { basePrice, dateFrom, dateTo, type, destination, isFavorite, offers: selectedOffers } = point;
 
   const pointTitle = `${type} ${destination.title}`;
   const timeStart = humanizePointTime(dateFrom);
   const timeEnd = humanizePointTime(dateTo);
-  const durationTime= formatDurationTime({dateFrom, dateTo});
-  const favoriteClass = isFavorite? 'event__favorite-btn--active':'';
-  const selectedOffers = [];
+  const durationTime = formatDurationTime({ dateFrom, dateTo });
+  const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
 
   return (`
     <li class="trip-events__item">
@@ -63,6 +64,7 @@ const createPointTemplate = (point) => {
 export default class PointView {
   constructor(point) {
     this.point = point;
+    console.log(point);
   }
 
   getTemplate() {
