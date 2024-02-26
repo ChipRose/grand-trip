@@ -17,9 +17,9 @@ export default class BoardPresenter {
     render(this.boardComponent, this.boardContainer);
     render(new SortView(), this.boardComponent.getElement());
     render(this.listComponent, this.boardComponent.getElement());
-    render(new EditPointView(), this.listComponent.getElement());
+    render(new EditPointView(this.boardPoints[0]), this.listComponent.getElement());
 
-    for (let i = 0; i < this.boardPoints.length; i++) {
+    for (let i = 1; i < this.boardPoints.length; i++) {
       render(new PointView(this.boardPoints[i]), this.listComponent.getElement());
     }
   }

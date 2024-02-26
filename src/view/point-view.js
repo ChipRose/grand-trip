@@ -64,7 +64,7 @@ const createPointTemplate = (point) => {
 export default class PointView {
   constructor(point) {
     this.point = point;
-    console.log(point);
+    console.log('Fish point', point);
   }
 
   getTemplate() {

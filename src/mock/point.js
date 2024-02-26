@@ -10,7 +10,31 @@ const destinations = [
       {
         src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
         description: "Chamonix parliament building"
-      }
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Chamonix parliament building"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Chamonix parliament building"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Chamonix parliament building"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Chamonix parliament building"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Chamonix parliament building"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Chamonix parliament building"
+      },
     ]
   },
   {
@@ -20,7 +44,19 @@ const destinations = [
       {
         src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
         description: "Amsterdam some building"
-      }
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Amsterdam some building"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Amsterdam some building"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Amsterdam some building"
+      },
     ]
   },
   {
@@ -30,7 +66,19 @@ const destinations = [
       {
         src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
         description: "Geneva some place"
-      }
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Geneva some place"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Geneva some place"
+      },
+      {
+        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
+        description: "Geneva some place"
+      },
     ]
   },
 ]
@@ -69,10 +117,9 @@ const offers = [
 ];
 
 const offersByType = types.map((type) => {
-  const offersIdList = offers.map(({ id }) => id);
   return ({
     type,
-    offers: getRandPartArray(offersIdList),
+    offers: getRandPartArray(offers),
   })
 });
 
@@ -86,7 +133,7 @@ export const generatePoint = () => {
   const date = getRandomDate();
   const type = getRandItemArray(types);
   const offersAvailable = getOffersByType(type);
-  const offersSelected = getItemsById({itemId:getRandPartArray(offersAvailable)});
+  const offersSelected = getRandPartArray(offersAvailable);
 
   return ({
     id: '0',
