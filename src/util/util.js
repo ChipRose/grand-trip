@@ -29,4 +29,8 @@ const getRandomDate = () => {
   return { dateFrom, dateTo };
 };
 
-export { getRandomInteger, getRandPartArray, getRandItemArray, getRandomDate };
+const capitalizeText = (word) => {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+export { getRandomInteger, getRandPartArray, getRandItemArray, getRandomDate, capitalizeText };

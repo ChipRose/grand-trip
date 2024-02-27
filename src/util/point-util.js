@@ -12,6 +12,7 @@ const dateFormat = {
 };
 
 const humanizePointDate = (date) => dayjs(date).format(dateFormat.DATE) || '';
+const humanizePointDateTime = (date) => dayjs(date).format(dateFormat.DATE_TIME) || '';
 const humanizePointTime = (date) => dayjs(date).format(dateFormat.TIME) || '';
 
 const getDurationTime = ({ dateFrom, dateTo }) => {
@@ -28,4 +29,4 @@ const formatDurationTime = ({ dateFrom, dateTo }) => {
   return dayDuration.format(dateFormat.SHORT_TIME);
 };
 
-export { humanizePointDate, humanizePointTime, formatDurationTime };
+export { humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime };

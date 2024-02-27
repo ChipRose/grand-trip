@@ -63,22 +63,7 @@ const destinations = [
     title: 'Geneva',
     description: 'Geneva, is a beautiful city, a true asian pearl, with crowded streets.',
     pictures: [
-      {
-        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
-        description: "Geneva some place"
-      },
-      {
-        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
-        description: "Geneva some place"
-      },
-      {
-        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
-        description: "Geneva some place"
-      },
-      {
-        src: `https://loremflickr.com/320/240?lock=${getRandomInteger(1000, 10000)}`,
-        description: "Geneva some place"
-      },
+
     ]
   },
 ]
@@ -123,17 +108,26 @@ const offersByType = types.map((type) => {
   })
 });
 
-const getItemsById = ({array = offers, itemId}) => (
+const getItemsById = ({ array = offers, itemId }) => (
   itemId?.map((id) => array?.find((item) => String(item.id) === String(id)))
 )
 
 const getOffersByType = (offerType) => (offersByType.find(({ type }) => type === offerType).offers);
 
+const type = getRandItemArray(types);
+const offersAvailable = getOffersByType(type);
+const offersSelected = getRandPartArray(offersAvailable);
+
+export const getPointGeneralInfo = (type) => {
+  return ({
+    types,
+    destinations,
+    offersAvailable: getOffersByType(type),
+  })
+ }
+
 export const generatePoint = () => {
   const date = getRandomDate();
-  const type = getRandItemArray(types);
-  const offersAvailable = getOffersByType(type);
-  const offersSelected = getRandPartArray(offersAvailable);
 
   return ({
     id: '0',
