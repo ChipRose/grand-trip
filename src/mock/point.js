@@ -114,10 +114,6 @@ const getItemsById = ({ array = offers, itemId }) => (
 
 const getOffersByType = (offerType) => (offersByType.find(({ type }) => type === offerType).offers);
 
-const type = getRandItemArray(types);
-const offersAvailable = getOffersByType(type);
-const offersSelected = getRandPartArray(offersAvailable);
-
 export const getPointGeneralInfo = (type) => {
   return ({
     types,
@@ -128,6 +124,9 @@ export const getPointGeneralInfo = (type) => {
 
 export const generatePoint = () => {
   const date = getRandomDate();
+  const type = getRandItemArray(types);
+  const offersAvailable = getOffersByType(type);
+  const offersSelected = getRandPartArray(offersAvailable);
 
   return ({
     id: '0',

@@ -3,36 +3,8 @@ import { getPointGeneralInfo } from '../mock/point.js';
 import { capitalizeText } from '../util/util.js';
 import { humanizePointDateTime } from '../util/point-util.js';
 
-const createDestinationBlock = (destination = {}) => {
-  const { pictures = [], description = '' } = destination;
-
-  const createGalleryBlockTemplate = (pictures = []) => (
-    pictures?.length ? `
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${pictures.map(({ src, alt }) => (`
-            <img class="event__photo" src=${src} alt=${alt}>
-          `))}
-        </div>
-      </div>
-    ` : ''
-  )
-
-  return (`
-  <section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">
-      ${description}
-    </p>
-
-    ${createGalleryBlockTemplate(pictures)}
-    </section>
-  `)
-}
-
 const createEventBlock = (point, types, destinations) => {
-  const { type = '', dateFrom = '', dateTo = '' } = point || {};
-  const { title = '' } = point.destination || {};
+  const { type = '', dateFrom = '', dateTo = '', destination = {} } = point || {};
 
   const timeStart = humanizePointDateTime(dateFrom);
   const timeEnd = humanizePointDateTime(dateTo);
@@ -82,7 +54,7 @@ const createEventBlock = (point, types, destinations) => {
         <label class="event__label  event__type-output" for="event-destination-1">
         ${capitalizeText(type)}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${title} list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination.title} list="destination-list-1">
         ${createEventDestinationList()}
       </div>
 
@@ -108,8 +80,7 @@ const createEventBlock = (point, types, destinations) => {
   `)
 }
 
-const createOffersBlock = (point, offersAvailable = []) => {
-  const { offers = [] } = point;
+const createOffersBlock = (offers, offersAvailable = []) => {
 
   const isOfferChecked = (offerId) => (
     offers.find(({ id }) => id === offerId) ? 'checked' : ''
@@ -138,16 +109,56 @@ const createOffersBlock = (point, offersAvailable = []) => {
   `)
 }
 
+const createDestinationBlock = (destination = {}) => {
+  const { pictures = [], description = '' } = destination;
+
+  const createGalleryBlockTemplate = (pictures = []) => (
+    pictures?.length ? `
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${pictures.map(({ src, alt }) => (`
+            <img class="event__photo" src=${src} alt=${alt}>
+          `)).join('')}
+        </div>
+      </div>
+    ` : ''
+  )
+
+  return (`
+  <section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">
+      ${description}
+    </p>
+
+    ${createGalleryBlockTemplate(pictures)}
+    </section>
+  `)
+}
+
 const createEditPointTemplate = (point = {}) => {
-  const { destination } = point;
+  const {
+    id = '0',
+    basePrice = 0,
+    dateFrom = '2019-07-10T22:55:56.845Z',
+    dateTo = '2019-07-11T11:22:13.375Z',
+    destination = {
+      title: '',
+      description: '',
+      pictures: ''
+    },
+    type = 'taxi',
+    offers = [],
+    isFavorite = false
+  } = point;
   const { types, offersAvailable, destinations } = getPointGeneralInfo(point?.type);
 
   return (`
     <li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
-        ${createEventBlock(point, types, destinations)}
+        ${createEventBlock({ dateFrom, dateTo, type, destination }, types, destinations)}
         <section class="event__details">
-            ${createOffersBlock(point, offersAvailable)}
+            ${createOffersBlock(offers, offersAvailable)}
             ${createDestinationBlock(destination)}
         </section>
       </form>
@@ -158,7 +169,6 @@ const createEditPointTemplate = (point = {}) => {
 export default class EditPointView {
   constructor(point) {
     this.point = point;
-    console.log('Edit fish point', point);
   }
 
   getTemplate() {
