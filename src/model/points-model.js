@@ -1,7 +1,9 @@
 import { generatePoint } from '../mock/point';
 
 export default class PointsModel {
-  points = Array.from({ length: 10 }, generatePoint);
+  #points = Array.from({ length: 10 }, generatePoint);
 
-  getPoints = ()=> this.points;
+  get points(){
+    return this.#points;
+  }
 }

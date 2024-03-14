@@ -133,7 +133,7 @@ export const generatePoint = () => {
     basePrice: getRandomInteger(200, 1000),
     dateFrom: date.dateFrom,
     dateTo: date.dateTo,
-    destination: destinations[getRandomInteger(0, destinations.length - 1)],
+    destination: getRandomInteger(0,1)?destinations[getRandomInteger(0, destinations.length - 1)]:{},
     type,
     offers: offersSelected,
     isFavorite: Boolean(getRandomInteger()),

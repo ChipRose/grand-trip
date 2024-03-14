@@ -5,6 +5,7 @@ import { humanizePointDateTime } from '../util/point-util.js';
 
 const createEventBlock = (point, types, destinations) => {
   const { type = '', dateFrom = '', dateTo = '', destination = {} } = point || {};
+  const { title = '' } = destination;
 
   const timeStart = humanizePointDateTime(dateFrom);
   const timeEnd = humanizePointDateTime(dateTo);
@@ -54,7 +55,7 @@ const createEventBlock = (point, types, destinations) => {
         <label class="event__label  event__type-output" for="event-destination-1">
         ${capitalizeText(type)}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${destination.title} list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${title}" list="destination-list-1">
         ${createEventDestinationList()}
       </div>
 
@@ -86,27 +87,23 @@ const createOffersBlock = (offers, offersAvailable = []) => {
     offers.find(({ id }) => id === offerId) ? 'checked' : ''
   )
 
-  return (`
+  return (offersAvailable?.length ? `
     <section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-      ${offersAvailable?.length ? `
-        <div class="event__available-offers">
-          ${offersAvailable.map(({ title, price, id }) => (`
-            <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" ${isOfferChecked(id)}>
-              <label class="event__offer-label" for="event-offer-${id}">
-                <span class="event__offer-title">${title}</span>
-                &plus;&euro;&nbsp;
-                <span class="event__offer-price">${price}</span>
-              </label>
-            </div>
-          `)).join('')}
-        </div>
-      `: ''
-    }
+      <div class="event__available-offers">
+        ${offersAvailable.map(({ title, price, id }) => (`
+          <div class="event__offer-selector">
+            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" ${isOfferChecked(id)}>
+            <label class="event__offer-label" for="event-offer-${id}">
+              <span class="event__offer-title">${title}</span>
+              &plus;&euro;&nbsp;
+              <span class="event__offer-price">${price}</span>
+            </label>
+          </div>
+        `)).join('')}
+      </div>
     </section>
-  `)
+  `: '')
 }
 
 const createDestinationBlock = (destination = {}) => {
@@ -124,16 +121,18 @@ const createDestinationBlock = (destination = {}) => {
     ` : ''
   )
 
-  return (`
-  <section class="event__section  event__section--destination">
-    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-    <p class="event__destination-description">
-      ${description}
-    </p>
+  return (
+    description ? `
+      <section class="event__section  event__section--destination">
+        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+        <p class="event__destination-description">
+          ${description}
+        </p>
 
-    ${createGalleryBlockTemplate(pictures)}
-    </section>
-  `)
+        ${createGalleryBlockTemplate(pictures)}
+      </section>
+    `: ''
+  )
 }
 
 const createEditPointTemplate = (point = {}) => {
@@ -167,23 +166,26 @@ const createEditPointTemplate = (point = {}) => {
 }
 
 export default class EditPointView {
+  #element = null;
+  #point = null;
+
   constructor(point) {
-    this.point = point;
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createEditPointTemplate(this.point);
+  get template() {
+    return createEditPointTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
