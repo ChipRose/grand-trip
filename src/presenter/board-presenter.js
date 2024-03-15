@@ -13,6 +13,30 @@ export default class BoardPresenter {
   #boardComponent = new BoardView();
   #listComponent = new ListView();
 
+  #renderPoint = (point) => {
+    const pointComponent = new PointView(point);
+    const pointEditComponent = new EditPointView(point);
+
+    const replacePointToForm = () => {
+      this.#listComponent.element.replaceChild(pointEditComponent.element, pointComponent.element);
+    };
+
+    const replaceFormToPoint = () => {
+      this.#listComponent.element.replaceChild(pointComponent.element, pointEditComponent.element);
+    };
+
+    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replacePointToForm();
+    });
+
+    pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToPoint();
+    });
+
+    render(pointComponent, this.#listComponent.element);
+  }
+
   init = (boardContainer, pointsModel) => {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
@@ -21,10 +45,9 @@ export default class BoardPresenter {
     render(this.#boardComponent, this.#boardContainer);
     render(new SortView(), this.#boardComponent.element);
     render(this.#listComponent, this.#boardComponent.element);
-    render(new EditPointView(this.#boardPoints[0]), this.#listComponent.element);
 
-    for (let i = 1; i < this.#boardPoints.length; i++) {
-      render(new PointView(this.#boardPoints[i]), this.#listComponent.element);
+    for (let i = 0; i < this.#boardPoints.length; i++) {
+      this.#renderPoint(this.#boardPoints[i]);
     }
   }
 }

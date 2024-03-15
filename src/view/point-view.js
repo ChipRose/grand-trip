@@ -18,9 +18,10 @@ const createOffersListBlock = (selectedOffers = []) => {
 }
 
 const createPointTemplate = (point) => {
-  const { basePrice, dateFrom, dateTo, type, destination, isFavorite, offers: selectedOffers } = point;
+  const { basePrice, dateFrom, dateTo, type='taxi', destination = {}, isFavorite, offers: selectedOffers } = point;
+  const { title = '' } = destination;
 
-  const pointTitle = `${type} ${destination.title}`;
+  const pointTitle = `${type} ${title}`;
   const timeStart = humanizePointTime(dateFrom);
   const timeEnd = humanizePointTime(dateTo);
   const durationTime = formatDurationTime({ dateFrom, dateTo });

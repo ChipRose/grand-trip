@@ -19,10 +19,10 @@ const createEventBlock = (point, types, destinations) => {
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Event type</legend>
-          ${types?.map((item) => (`
+          ${types?.map((item, index) => (`
             <div class="event__type-item">
-              <input id="event-type-${item}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${item} ${isItemChecked(item)}>
-              <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-1">${capitalizeText(item)}</label>
+              <input id="event-type-${item}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${item} ${isItemChecked(item)}>
+              <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-${index}">${capitalizeText(item)}</label>
             </div>
           `)).join('')}
         </fieldset>
@@ -81,10 +81,10 @@ const createEventBlock = (point, types, destinations) => {
   `)
 }
 
-const createOffersBlock = (offers, offersAvailable = []) => {
+const createOffersBlock = ({offers=[], offersAvailable = []}) => {
 
   const isOfferChecked = (offerId) => (
-    offers.find(({ id }) => id === offerId) ? 'checked' : ''
+    offers?.find(({ id }) => id === offerId) ? 'checked' : ''
   )
 
   return (offersAvailable?.length ? `
@@ -157,8 +157,8 @@ const createEditPointTemplate = (point = {}) => {
       <form class="event event--edit" action="#" method="post">
         ${createEventBlock({ dateFrom, dateTo, type, destination }, types, destinations)}
         <section class="event__details">
-            ${createOffersBlock(offers, offersAvailable)}
-            ${createDestinationBlock(destination)}
+        ${createOffersBlock({offers, offersAvailable})}
+        ${createDestinationBlock(destination)}
         </section>
       </form>
     </li>
