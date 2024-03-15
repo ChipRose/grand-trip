@@ -25,8 +25,17 @@ export default class BoardPresenter {
       this.#listComponent.element.replaceChild(pointComponent.element, pointEditComponent.element);
     };
 
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'ESC') {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    }
+
     pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replacePointToForm();
+      document.addEventListener('keydown', onEscKeyDown);
     });
 
     pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
