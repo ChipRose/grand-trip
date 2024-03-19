@@ -13,6 +13,6 @@ const contentElement = siteMainElement.querySelector('.trip-events');
 render(new FilterView(), filterElement);
 
 const pointsModel = new PointsModel();
-const boardPresenter = new BoardPresenter();
+const boardPresenter = new BoardPresenter(contentElement, pointsModel);
 
-boardPresenter.init(contentElement, pointsModel);
+boardPresenter.init();

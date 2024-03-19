@@ -14,6 +14,11 @@ export default class BoardPresenter {
   #boardComponent = new BoardView();
   #listComponent = new ListView();
 
+  constructor(boardContainer, pointsModel) {
+    this.#boardContainer = boardContainer;
+    this.#pointsModel = pointsModel;
+  }
+
   #renderPoint = (point) => {
     const pointComponent = new PointView(point);
     const pointEditComponent = new EditPointView(point);
@@ -51,21 +56,24 @@ export default class BoardPresenter {
     render(new NoPointsView(filterType), this.#boardComponent.element)
   }
 
-  init = (boardContainer, pointsModel) => {
-    this.#boardContainer = boardContainer;
-    this.#pointsModel = pointsModel;
-    this.#boardPoints = [...this.#pointsModel.points];
+  #renderBoard = () => {
     render(this.#boardComponent, this.#boardContainer);
 
-    if (this.#boardPoints?.length) {
-      render(new SortView(), this.#boardComponent.element);
-      render(this.#listComponent, this.#boardComponent.element);
-
-      for (let i = 0; i < this.#boardPoints.length; i++) {
-        this.#renderPoint(this.#boardPoints[i]);
-      }
-    } else {
+    if (!this.#boardPoints?.length) {
       this.#renderEmptyState();
+      return;
     }
+
+    render(new SortView(), this.#boardComponent.element);
+    render(this.#listComponent, this.#boardComponent.element);
+
+    for (let i = 0; i < this.#boardPoints.length; i++) {
+      this.#renderPoint(this.#boardPoints[i]);
+    }
+  }
+
+  init = () => {
+    this.#boardPoints = [...this.#pointsModel.points];
+    this.#renderBoard();
   }
 }
