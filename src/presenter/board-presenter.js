@@ -3,6 +3,7 @@ import SortView from "../view/sort-view";
 import ListView from "../view/list-view";
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
+import NoPointsView from "../view/no-points-view";
 import { render } from '../render';
 
 export default class BoardPresenter {
@@ -46,17 +47,25 @@ export default class BoardPresenter {
     render(pointComponent, this.#listComponent.element);
   }
 
+  #renderEmptyState = (filterType) => {
+    render(new NoPointsView(filterType), this.#boardComponent.element)
+  }
+
   init = (boardContainer, pointsModel) => {
     this.#boardContainer = boardContainer;
     this.#pointsModel = pointsModel;
     this.#boardPoints = [...this.#pointsModel.points];
-
     render(this.#boardComponent, this.#boardContainer);
-    render(new SortView(), this.#boardComponent.element);
-    render(this.#listComponent, this.#boardComponent.element);
 
-    for (let i = 0; i < this.#boardPoints.length; i++) {
-      this.#renderPoint(this.#boardPoints[i]);
+    if (this.#boardPoints?.length) {
+      render(new SortView(), this.#boardComponent.element);
+      render(this.#listComponent, this.#boardComponent.element);
+
+      for (let i = 0; i < this.#boardPoints.length; i++) {
+        this.#renderPoint(this.#boardPoints[i]);
+      }
+    } else {
+      this.#renderEmptyState();
     }
   }
 }
