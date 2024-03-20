@@ -1,5 +1,6 @@
-import { createElement } from '../render';
 import { getNoPointMessage } from '../util/const';
+import AbstractView from '../framework/view/abstract-view';
+
 
 const createNoPointTemplate = (filterType) => {
   return (`
@@ -9,28 +10,16 @@ const createNoPointTemplate = (filterType) => {
   `)
 }
 
-export default class NoPointsView {
-  #element = null;
-  #filterType = ''
+export default class NoPointsView extends AbstractView {
+  #filterType = '';
 
   constructor(filterType) {
+    super();
     this.#filterType = filterType;
   }
 
   get template() {
     return createNoPointTemplate(this.#filterType);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

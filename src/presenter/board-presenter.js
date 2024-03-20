@@ -4,7 +4,7 @@ import ListView from "../view/list-view";
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
 import NoPointsView from "../view/no-points-view";
-import { render } from '../render';
+import { render } from '../framework/render';
 
 export default class BoardPresenter {
   #boardContainer = null;
