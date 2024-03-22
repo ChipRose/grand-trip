@@ -39,13 +39,12 @@ export default class BoardPresenter {
       }
     }
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setOpenClickHandler(() => {
       replacePointToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    pointEditComponent.setFormSubmitHandler(()=>{
       replaceFormToPoint();
     });
 
@@ -76,4 +75,6 @@ export default class BoardPresenter {
     this.#boardPoints = [...this.#pointsModel.points];
     this.#renderBoard();
   }
+
+
 }

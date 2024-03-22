@@ -3,6 +3,21 @@ import { capitalizeText } from '../util/util';
 import { humanizePointDateTime } from '../util/point-util';
 import AbstractView from '../framework/view/abstract-view';
 
+const BLANK_POINT = {
+  id: '0',
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: {
+    title: '',
+    description: '',
+    pictures: []
+  },
+  type: 'taxi',
+  offers: [],
+  isFavorite: false
+}
+
 const createEventBlock = (point, types, destinations) => {
   const { type, dateFrom, dateTo, destination } = point || {};
   const { title } = destination;
@@ -135,21 +150,15 @@ const createDestinationBlock = (destination) => {
   )
 }
 
-const createEditPointTemplate = (point) => {
+const createEditPointTemplate = (point = {}) => {
   const {
-    id = '0',
-    basePrice = 0,
-    dateFrom = '2019-07-10T22:55:56.845Z',
-    dateTo = '2019-07-11T11:22:13.375Z',
+    dateFrom,
+    dateTo,
     destination = {
-      title: '',
-      description: '',
-      pictures: []
     },
-    type = 'taxi',
-    offers = [],
-    isFavorite = false
-  } = point || {};
+    type,
+    offers,
+  } = point;
   const { types, offersAvailable, destinations } = getPointGeneralInfo(point?.type);
 
   return (`
@@ -168,12 +177,22 @@ const createEditPointTemplate = (point) => {
 export default class EditPointView extends AbstractView {
   #point = null;
 
-  constructor(point) {
+  constructor(point = BLANK_POINT) {
     super();
     this.#point = point;
   }
 
   get template() {
     return createEditPointTemplate(this.#point);
+  }
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.submitClick = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.submitClick();
   }
 }

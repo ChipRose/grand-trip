@@ -18,7 +18,7 @@ const createOffersListBlock = (selectedOffers = []) => {
 }
 
 const createPointTemplate = (point) => {
-  const { basePrice, dateFrom, dateTo, type='taxi', destination = {}, isFavorite, offers: selectedOffers } = point;
+  const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite, offers: selectedOffers } = point;
   const { title = '' } = destination;
 
   const pointTitle = `${type} ${title}`;
@@ -72,5 +72,15 @@ export default class PointView extends AbstractView {
 
   get template() {
     return createPointTemplate(this.#point);
+  }
+
+  setOpenClickHandler = (callback) => {
+    this._callback.openClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openClickHandler);
+  }
+
+  #openClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openClick();
   }
 }
