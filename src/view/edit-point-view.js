@@ -1,4 +1,3 @@
-import { getPointGeneralInfo } from '../mock/point';
 import { capitalizeText } from '../util/util';
 import { humanizePointDateTime } from '../util/point-util';
 import AbstractView from '../framework/view/abstract-view';
@@ -150,16 +149,15 @@ const createDestinationBlock = (destination) => {
   )
 }
 
-const createEditPointTemplate = (point = {}) => {
+const createEditPointTemplate = ({ point = {}, pointGeneralInfo = {} }) => {
   const {
     dateFrom,
     dateTo,
-    destination = {
-    },
+    destination,
     type,
     offers,
   } = point;
-  const { types, offersAvailable, destinations } = getPointGeneralInfo(point?.type);
+  const { types, offersAvailable, destinations } = pointGeneralInfo;
 
   return (`
     <li class="trip-events__item">
@@ -176,14 +174,16 @@ const createEditPointTemplate = (point = {}) => {
 
 export default class EditPointView extends AbstractView {
   #point = null;
+  #pointGeneralInfo = {};
 
-  constructor(point = BLANK_POINT) {
+  constructor({ point = BLANK_POINT, getPointGeneralInfo }) {
     super();
     this.#point = point;
+    this.#pointGeneralInfo = getPointGeneralInfo(point?.type);
   }
 
   get template() {
-    return createEditPointTemplate(this.#point);
+    return createEditPointTemplate({ point: this.#point, pointGeneralInfo: this.#pointGeneralInfo });
   }
 
   setFormSubmitHandler = (callback) => {

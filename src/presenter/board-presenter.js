@@ -4,6 +4,7 @@ import ListView from "../view/list-view";
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
 import NoPointsView from "../view/no-points-view";
+import { getPointGeneralInfo } from "../mock/point";
 import { render } from '../framework/render';
 
 export default class BoardPresenter {
@@ -21,7 +22,7 @@ export default class BoardPresenter {
 
   #renderPoint = (point) => {
     const pointComponent = new PointView(point);
-    const pointEditComponent = new EditPointView(point);
+    const pointEditComponent = new EditPointView({point, getPointGeneralInfo});
 
     const replacePointToForm = () => {
       this.#listComponent.element.replaceChild(pointEditComponent.element, pointComponent.element);
