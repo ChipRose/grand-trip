@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
+import { NoPointMessage } from "../mock/const";
 dayjs.extend(duration);
 
 const dateFormat = {
@@ -29,4 +30,12 @@ const formatDurationTime = ({ dateFrom, dateTo }) => {
   return dayDuration.format(dateFormat.SHORT_TIME);
 };
 
-export { humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime };
+const getNoPointMessage = (filterType = 'everthing') => {
+  return NoPointMessage[filterType];
+};
+
+const isPastEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
+const isFutureEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'D');
+
+
+export { humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime, getNoPointMessage, isPastEvent, isFutureEvent };

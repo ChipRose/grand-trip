@@ -1,20 +1,46 @@
-import { capitalizeText } from '../util/util';
+import { capitalizeText, isItemChecked } from '../util/util';
 import { humanizePointDateTime } from '../util/point-util';
+import { BLANK_POINT } from '../mock/const';
 import AbstractView from '../framework/view/abstract-view';
 
-const BLANK_POINT = {
-  id: '0',
-  basePrice: 0,
-  dateFrom: null,
-  dateTo: null,
-  destination: {
-    title: '',
-    description: '',
-    pictures: []
-  },
-  type: 'taxi',
-  offers: [],
-  isFavorite: false
+const createEventTypeList = ({ type, types }) => {
+  return (`
+    <div class="event__type-list">
+      <fieldset class="event__type-group">
+        <legend class="visually-hidden">Event type</legend>
+        ${types?.map((item, index) => (`
+          <div class="event__type-item">
+            <input id="event-type-${item}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${item} ${isItemChecked({ array: [item], curValue: type })}>
+            <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-${index}">${capitalizeText(item)}</label>
+          </div>
+        `)).join('')}
+      </fieldset>
+    </div>
+  `)
+}
+
+const createEventDestinationList = (destinations) => {
+  return (`
+    <datalist id="destination-list-1">
+      ${destinations.map(({ title }) => (`
+        <option value=${title}></option>
+      `)).join('')}
+    </datalist>
+  `)
+}
+
+const createGalleryList = (pictures) => {
+  if (pictures?.length) {
+    return (`
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${pictures.map(({ src, alt }) => (`
+            <img class="event__photo" src=${src} alt=${alt}>
+          `)).join('')}
+        </div>
+      </div>
+    `)
+  }
 }
 
 const createEventBlock = (point, types, destinations) => {
@@ -24,36 +50,6 @@ const createEventBlock = (point, types, destinations) => {
   const timeStart = humanizePointDateTime(dateFrom);
   const timeEnd = humanizePointDateTime(dateTo);
 
-  const isItemChecked = (item) => (
-    item === type ? 'checked' : ''
-  )
-
-  const createEventTypeList = () => {
-    return (`
-      <div class="event__type-list">
-        <fieldset class="event__type-group">
-          <legend class="visually-hidden">Event type</legend>
-          ${types?.map((item, index) => (`
-            <div class="event__type-item">
-              <input id="event-type-${item}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${item} ${isItemChecked(item)}>
-              <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-${index}">${capitalizeText(item)}</label>
-            </div>
-          `)).join('')}
-        </fieldset>
-      </div>
-    `)
-  }
-
-  const createEventDestinationList = () => {
-    return (`
-      <datalist id="destination-list-1">
-        ${destinations.map(({ title }) => (`
-          <option value=${title}></option>
-        `)).join('')}
-      </datalist>
-    `)
-  }
-
   return (`
     <header class="event__header">
       <div class="event__type-wrapper">
@@ -62,7 +58,7 @@ const createEventBlock = (point, types, destinations) => {
           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
         <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-        ${createEventTypeList()}
+        ${createEventTypeList({ type, types })}
       </div>
 
       <div class="event__field-group  event__field-group--destination">
@@ -70,7 +66,7 @@ const createEventBlock = (point, types, destinations) => {
         ${capitalizeText(type)}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${title}" list="destination-list-1">
-        ${createEventDestinationList()}
+        ${createEventDestinationList(destinations)}
       </div>
 
       <div class="event__field-group  event__field-group--time">
@@ -96,57 +92,41 @@ const createEventBlock = (point, types, destinations) => {
 }
 
 const createOffersBlock = ({ offers, offersAvailable }) => {
-
-  const isOfferChecked = (offerId) => (
-    offers?.find(({ id }) => id === offerId) ? 'checked' : ''
-  )
-
-  return (offersAvailable?.length ? `
-    <section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">
-        ${offersAvailable.map(({ title, price, id }) => (`
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" ${isOfferChecked(id)}>
-            <label class="event__offer-label" for="event-offer-${id}">
-              <span class="event__offer-title">${title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${price}</span>
-            </label>
-          </div>
-        `)).join('')}
-      </div>
-    </section>
-  `: '')
+  if (offersAvailable?.length) {
+    return (`
+      <section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+        <div class="event__available-offers">
+          ${offersAvailable.map(({ title, price, id }) => (`
+            <div class="event__offer-selector">
+              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" ${isItemChecked({ array: offers, curValue: { id } })}>
+              <label class="event__offer-label" for="event-offer-${id}">
+                <span class="event__offer-title">${title}</span>
+                &plus;&euro;&nbsp;
+                <span class="event__offer-price">${price}</span>
+              </label>
+            </div>
+          `)).join('')}
+        </div>
+      </section>
+    `)
+  }
 }
 
 const createDestinationBlock = (destination) => {
   const { pictures, description } = destination || {};
 
-  const createGalleryBlockTemplate = (pictures) => (
-    pictures?.length ? `
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${pictures.map(({ src, alt }) => (`
-            <img class="event__photo" src=${src} alt=${alt}>
-          `)).join('')}
-        </div>
-      </div>
-    ` : ''
-  )
-
-  return (
-    description ? `
+  if (description) {
+    return (`
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">
           ${description}
         </p>
-
-        ${createGalleryBlockTemplate(pictures)}
+        ${createGalleryList(pictures)}
       </section>
-    `: ''
-  )
+    `)
+  }
 }
 
 const createEditPointTemplate = ({ point = {}, pointGeneralInfo = {} }) => {
@@ -157,6 +137,7 @@ const createEditPointTemplate = ({ point = {}, pointGeneralInfo = {} }) => {
     type,
     offers,
   } = point;
+
   const { types, offersAvailable, destinations } = pointGeneralInfo;
 
   return (`

@@ -1,4 +1,4 @@
-import { getNoPointMessage } from '../util/const';
+import { getNoPointMessage } from '../util/point-util';
 import AbstractView from '../framework/view/abstract-view';
 
 

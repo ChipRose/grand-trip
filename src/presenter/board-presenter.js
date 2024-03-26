@@ -4,32 +4,54 @@ import ListView from "../view/list-view";
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
 import NoPointsView from "../view/no-points-view";
+import ControlEventsView from "../view/control-events-view";
+import NewPointButtonView from "../view/new-point-button-view";
 import { getPointGeneralInfo } from "../mock/point";
-import { render } from '../framework/render';
+import { render, replace, remove } from '../framework/render';
+import { generateFilter } from "../mock/filter";
 
 export default class BoardPresenter {
   #boardContainer = null;
+  #pointsControlContainer = null;
   #pointsModel = null;
   #boardPoints = [];
+  #filters=[];
 
   #boardComponent = new BoardView();
   #listComponent = new ListView();
 
-  constructor(boardContainer, pointsModel) {
+  constructor({ boardContainer, pointsControlContainer, pointsModel }) {
     this.#boardContainer = boardContainer;
+    this.#pointsControlContainer = pointsControlContainer;
     this.#pointsModel = pointsModel;
+    this.#filters = generateFilter(this.#pointsModel.points);
+    console.log(this.#filters);
+  }
+
+  #renderPointsControlPanel = () => {
+    const controlEventsComponent = new ControlEventsView(this.#filters);
+    const newPointButtonComponent = new NewPointButtonView();
+
+    const handleNewPointButtonClick = () => {
+      console.log('New');
+    }
+
+    newPointButtonComponent.setClickHandler(handleNewPointButtonClick)
+
+    render(controlEventsComponent, this.#pointsControlContainer);
+    render(newPointButtonComponent, this.#pointsControlContainer);
   }
 
   #renderPoint = (point) => {
     const pointComponent = new PointView(point);
-    const pointEditComponent = new EditPointView({point, getPointGeneralInfo});
+    const pointEditComponent = new EditPointView({ point, getPointGeneralInfo });
 
     const replacePointToForm = () => {
-      this.#listComponent.element.replaceChild(pointEditComponent.element, pointComponent.element);
+      replace(pointEditComponent, pointComponent);
     };
 
     const replaceFormToPoint = () => {
-      this.#listComponent.element.replaceChild(pointComponent.element, pointEditComponent.element);
+      replace(pointComponent, pointEditComponent);
     };
 
     const onEscKeyDown = (evt) => {
@@ -45,7 +67,7 @@ export default class BoardPresenter {
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    pointEditComponent.setFormSubmitHandler(()=>{
+    pointEditComponent.setFormSubmitHandler(() => {
       replaceFormToPoint();
     });
 
@@ -74,8 +96,7 @@ export default class BoardPresenter {
 
   init = () => {
     this.#boardPoints = [...this.#pointsModel.points];
+    this.#renderPointsControlPanel();
     this.#renderBoard();
   }
-
-
 }
