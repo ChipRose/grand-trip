@@ -25,4 +25,12 @@ const FilterType = {
   PAST: 'past'
 };
 
-export { NoPointMessage, FilterType, BLANK_POINT };
+const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFERS:'offers'
+};
+
+export { NoPointMessage, FilterType, SortType, BLANK_POINT };

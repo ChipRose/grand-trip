@@ -7,8 +7,9 @@ import NoPointsView from "../view/no-points-view";
 import ControlEventsView from "../view/control-events-view";
 import NewPointButtonView from "../view/new-point-button-view";
 import { getPointGeneralInfo } from "../mock/point";
-import { render, replace, remove } from '../framework/render';
+import { render, replace } from '../framework/render';
 import { generateFilter } from "../mock/filter";
+import {generateSorting} from "../mock/sorting";
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -16,6 +17,7 @@ export default class BoardPresenter {
   #pointsModel = null;
   #boardPoints = [];
   #filters=[];
+  #sorting=[];
 
   #boardComponent = new BoardView();
   #listComponent = new ListView();
@@ -25,6 +27,7 @@ export default class BoardPresenter {
     this.#pointsControlContainer = pointsControlContainer;
     this.#pointsModel = pointsModel;
     this.#filters = generateFilter(this.#pointsModel.points);
+    this.#sorting = generateSorting(this.#pointsModel.points);
     console.log(this.#filters);
   }
 
@@ -86,7 +89,7 @@ export default class BoardPresenter {
       return;
     }
 
-    render(new SortView(), this.#boardComponent.element);
+    render(new SortView(this.#sorting), this.#boardComponent.element);
     render(this.#listComponent, this.#boardComponent.element);
 
     for (let i = 0; i < this.#boardPoints.length; i++) {
