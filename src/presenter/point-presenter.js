@@ -34,7 +34,7 @@ export default class PointPresenter {
   }
 
   #handleFormSubmit = () => {
-    this.#replacePointToForm();
+    this.#replaceFormToPoint();
   }
 
   init = (point) => {
