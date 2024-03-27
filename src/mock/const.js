@@ -33,4 +33,13 @@ const SortType = {
   OFFERS:'offers'
 };
 
-export { NoPointMessage, FilterType, SortType, BLANK_POINT };
+const DateFormat = {
+  DATE: 'MMM D',
+  TIME: 'HH:mm',
+  DATE_TIME: 'DD[/]MM[/]YY[&nbsp;]HH[:]mm',
+  LONG_TIME: 'DD[D] HH[H] mm[M]',
+  MIDDLE_TIME: 'HH[H] mm[M]',
+  SHORT_TIME: 'mm[M]'
+};
+
+export { NoPointMessage, FilterType, SortType, BLANK_POINT, DateFormat };

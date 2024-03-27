@@ -1,20 +1,11 @@
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
-import { NoPointMessage } from "../mock/const";
+import { NoPointMessage, DateFormat } from "../mock/const";
 dayjs.extend(duration);
 
-const dateFormat = {
-  DATE: 'MMM D',
-  TIME: 'HH:mm',
-  DATE_TIME: 'DD[/]MM[/]YY[&nbsp;]HH[:]mm',
-  LONG_TIME: 'DD[D] HH[H] mm[M]',
-  MIDDLE_TIME: 'HH[H] mm[M]',
-  SHORT_TIME: 'mm[M]'
-};
-
-const humanizePointDate = (date) => dayjs(date).format(dateFormat.DATE) || '';
-const humanizePointDateTime = (date) => dayjs(date).format(dateFormat.DATE_TIME) || '';
-const humanizePointTime = (date) => dayjs(date).format(dateFormat.TIME) || '';
+const humanizePointDate = (date) => dayjs(date).format(DateFormat.DATE) || '';
+const humanizePointDateTime = (date) => dayjs(date).format(DateFormat.DATE_TIME) || '';
+const humanizePointTime = (date) => dayjs(date).format(DateFormat.TIME) || '';
 
 const getDurationTime = ({ dateFrom, dateTo }) => {
   const dateStart = dayjs(dateFrom);
@@ -25,12 +16,12 @@ const getDurationTime = ({ dateFrom, dateTo }) => {
 const formatDurationTime = ({ dateFrom, dateTo }) => {
   const dayDuration = getDurationTime({ dateFrom, dateTo });
   const days = dayDuration.get('days');
-  if (days) return dayDuration.format(dateFormat.LONG_TIME);
-  if (!days && dayDuration.get('hours')) return dayDuration.format(dateFormat.MIDDLE_TIME);
-  return dayDuration.format(dateFormat.SHORT_TIME);
+  if (days) return dayDuration.format(DateFormat.LONG_TIME);
+  if (!days && dayDuration.get('hours')) return dayDuration.format(DateFormat.MIDDLE_TIME);
+  return dayDuration.format(DateFormat.SHORT_TIME);
 };
 
-const getNoPointMessage = (filterType = 'everthing') => {
+const getNoPointMessage = (filterType = 'EVERYTHING') => {
   return NoPointMessage[filterType];
 };
 

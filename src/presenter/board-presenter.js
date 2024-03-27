@@ -1,13 +1,11 @@
 import BoardView from "../view/board-view";
 import SortView from "../view/sort-view";
 import ListView from "../view/list-view";
-import PointView from "../view/point-view";
-import EditPointView from "../view/edit-point-view";
 import NoPointsView from "../view/no-points-view";
 import ControlEventsView from "../view/control-events-view";
 import NewPointButtonView from "../view/new-point-button-view";
-import { getPointGeneralInfo } from "../mock/point";
-import { render, replace, RenderPosition } from '../framework/render';
+import PointPresenter from "./point-presenter";
+import { render } from '../framework/render';
 import { generateFilter } from "../mock/filter";
 import { generateSorting } from "../mock/sorting";
 
@@ -51,35 +49,8 @@ export default class BoardPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointComponent = new PointView(point);
-    const pointEditComponent = new EditPointView({ point, getPointGeneralInfo });
-
-    const replacePointToForm = () => {
-      replace(pointEditComponent, pointComponent);
-    };
-
-    const replaceFormToPoint = () => {
-      replace(pointComponent, pointEditComponent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'ESC') {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    }
-
-    pointComponent.setOpenClickHandler(() => {
-      replacePointToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    pointEditComponent.setFormSubmitHandler(() => {
-      replaceFormToPoint();
-    });
-
-    render(pointComponent, this.#listComponent.element);
+    const pointPresenter = new PointPresenter(this.#listComponent.element);
+    pointPresenter.init(point);
   }
 
   #renderPoints = () => {
