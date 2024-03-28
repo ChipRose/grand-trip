@@ -7,10 +7,12 @@ export default class PointPresenter {
   #pointComponent = null;
   #pointEditComponent = null;
   #listContainer = null;
+  #changeData = null;
   #point = null;
 
-  constructor(listContainer) {
+  constructor({ listContainer, changeData }) {
     this.#listContainer = listContainer;
+    this.#changeData = changeData;
   }
 
   #replacePointToForm = () => {
@@ -33,7 +35,30 @@ export default class PointPresenter {
     this.#replacePointToForm();
   }
 
+  #handleFavoriteClick = () => {
+    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+  }
+
+  #handleTypeChange = (evt) => {
+    if (evt.target.value === this.#point.type) {
+      return
+    }
+
+    this.#changeData({ ...this.#point, type: evt.target.value });
+  }
+
+  #handleOffersChange = (evt) => {
+    const offerId = evt.target.value;
+
+    // if (this.#point.offers.includes(String(offerId))){
+    //   rezult.filter((offer)=>offer!==offerId);
+    // }
+    console.log([...this.#point.offers, offerId]);
+    //  this.#changeData({ ...this.#point, offers:rezult });
+  }
+
   #handleFormSubmit = () => {
+    this.#changeData(this.#point);
     this.#replaceFormToPoint();
   }
 
@@ -43,11 +68,14 @@ export default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new EditPointView({ point, getPointGeneralInfo });
+    this.#pointComponent = new PointView({ point, pointGeneralInfo: getPointGeneralInfo(point.type)});
+    this.#pointEditComponent = new EditPointView({ point, pointGeneralInfo: getPointGeneralInfo(point.type)});
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
+    this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
+    this.#pointEditComponent.setOffersChangeHandler(this.#handleOffersChange);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#listContainer);

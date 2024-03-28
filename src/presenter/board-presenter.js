@@ -8,6 +8,7 @@ import PointPresenter from "./point-presenter";
 import { render } from '../framework/render';
 import { generateFilter } from "../mock/filter";
 import { generateSorting } from "../mock/sorting";
+import { updateItem } from "../util/common-util";
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -16,6 +17,7 @@ export default class BoardPresenter {
   #boardPoints = [];
   #filters = [];
   #sorting = [];
+  #pointPresenter = new Map();
 
   #boardComponent = new BoardView();
   #listComponent = new ListView();
@@ -26,6 +28,7 @@ export default class BoardPresenter {
     this.#pointsModel = pointsModel;
     this.#filters = generateFilter(this.#pointsModel.points);
     this.#sorting = generateSorting(this.#pointsModel.points);
+    console.log('pointsModel',this.#pointsModel.points);
   }
 
   #renderPointsControlPanel = () => {
@@ -49,8 +52,9 @@ export default class BoardPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#listComponent.element);
+    const pointPresenter = new PointPresenter({ listContainer: this.#listComponent.element, changeData: this.#handlePointChange });
     pointPresenter.init(point);
+    this.#pointPresenter.set(point.id, pointPresenter);
   }
 
   #renderPoints = () => {
@@ -80,6 +84,16 @@ export default class BoardPresenter {
 
     this.#renderSortComponent();
     this.#renderPointsList();
+  }
+
+  #handlePointChange = (updatedPoint) => {
+    this.#boardPoints = updateItem({ items: this.#boardPoints, update: updatedPoint });
+    this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
+  }
+
+  #clearPointList = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   }
 
   init = () => {

@@ -28,5 +28,4 @@ const getNoPointMessage = (filterType = 'EVERYTHING') => {
 const isPastEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
 const isFutureEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'D');
 
-
 export { humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime, getNoPointMessage, isPastEvent, isFutureEvent };

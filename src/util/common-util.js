@@ -44,4 +44,17 @@ const isItemChecked = ({ curValue, array }) => {
   }
 }
 
-export { getRandomInteger, getRandPartArray, getRandItemArray, getRandomDate, capitalizeText, isItemChecked };
+const updateItem = ({ items, update }) => {
+  const index = items.findIndex((item) => item.id === update.id);
+  const rezult = items.slice();
+
+  if (index === -1) {
+    return items;
+  }
+
+  rezult[index] = update;
+
+  return rezult;
+}
+
+export { getRandomInteger, getRandPartArray, getRandItemArray, getRandomDate, capitalizeText, isItemChecked, updateItem };

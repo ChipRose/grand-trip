@@ -1,23 +1,27 @@
 import AbstractView from '../framework/view/abstract-view';
 import { humanizePointDate, humanizePointTime, formatDurationTime } from '../util/point-util';
 
-const createOffersListBlock = (selectedOffers = []) => {
-  return (
-    selectedOffers?.length ?
-      `<ul class="event__selected-offers">
-        ${selectedOffers.map(({ title, price }) => (
-        `<li class="event__offer">
-          <span class="event__offer-title">${title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${price}</span>
-        </li>`
-      )).join('')}
-      </ul>`
-      : ''
-  )
+const createOffersListBlock = ({ selectedOffers = [], pointGeneralInfo = {} }) => {
+  const checkedOffers = pointGeneralInfo.offersAvailable?.filter((offer) => selectedOffers.includes(offer.id));
+
+  if (!selectedOffers.length) {
+    return ('')
+  }
+
+  return (`
+    <ul class="event__selected-offers">
+      ${checkedOffers.map(({ title, price }) => (
+      `<li class="event__offer">
+        <span class="event__offer-title">${title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${price}</span>
+      </li>`
+    )).join('')}
+    </ul>
+  `)
 }
 
-const createPointTemplate = (point) => {
+const createPointTemplate = ({ point, pointGeneralInfo }) => {
   const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite, offers: selectedOffers } = point;
   const { title = '' } = destination;
 
@@ -47,7 +51,7 @@ const createPointTemplate = (point) => {
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        ${createOffersListBlock(selectedOffers)}
+        ${createOffersListBlock({ selectedOffers, pointGeneralInfo })}
         <button class="event__favorite-btn ${favoriteClass}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -64,14 +68,16 @@ const createPointTemplate = (point) => {
 
 export default class PointView extends AbstractView {
   #point = null;
+  #pointGeneralInfo = {};
 
-  constructor(point) {
+  constructor({ point, pointGeneralInfo }) {
     super();
     this.#point = point;
+    this.#pointGeneralInfo = pointGeneralInfo;
   }
 
   get template() {
-    return createPointTemplate(this.#point);
+    return createPointTemplate({ point: this.#point, pointGeneralInfo: this.#pointGeneralInfo });
   }
 
   setOpenClickHandler = (callback) => {
@@ -79,8 +85,18 @@ export default class PointView extends AbstractView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openClickHandler);
   }
 
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler)
+  }
+
   #openClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.openClick();
+  }
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }

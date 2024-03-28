@@ -1,4 +1,4 @@
-import { capitalizeText, isItemChecked } from '../util/util';
+import { capitalizeText, isItemChecked } from '../util/common-util';
 import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
 import AbstractView from '../framework/view/abstract-view';
@@ -30,17 +30,18 @@ const createEventDestinationList = (destinations) => {
 }
 
 const createGalleryList = (pictures) => {
-  if (pictures?.length) {
-    return (`
-      <div class="event__photos-container">
-        <div class="event__photos-tape">
-          ${pictures.map(({ src, alt }) => (`
-            <img class="event__photo" src=${src} alt=${alt}>
-          `)).join('')}
-        </div>
-      </div>
-    `)
+  if (!pictures?.length) {
+    return ''
   }
+  return (`
+    <div class="event__photos-container">
+      <div class="event__photos-tape">
+        ${pictures.map(({ src, alt }) => (`
+          <img class="event__photo" src=${src} alt=${alt}>
+        `)).join('')}
+      </div>
+    </div>
+  `)
 }
 
 const createEventBlock = (point, types, destinations) => {
@@ -57,7 +58,7 @@ const createEventBlock = (point, types, destinations) => {
           <span class="visually-hidden">Choose event type</span>
           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
-        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" value=${type} type="checkbox">
         ${createEventTypeList({ type, types })}
       </div>
 
@@ -92,25 +93,27 @@ const createEventBlock = (point, types, destinations) => {
 }
 
 const createOffersBlock = ({ offers, offersAvailable }) => {
-  if (offersAvailable?.length) {
-    return (`
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-        <div class="event__available-offers">
-          ${offersAvailable.map(({ title, price, id }) => (`
-            <div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" ${isItemChecked({ array: offers, curValue: { id } })}>
-              <label class="event__offer-label" for="event-offer-${id}">
-                <span class="event__offer-title">${title}</span>
-                &plus;&euro;&nbsp;
-                <span class="event__offer-price">${price}</span>
-              </label>
-            </div>
-          `)).join('')}
-        </div>
-      </section>
-    `)
+  if (!offersAvailable?.length) {
+    return ('');
   }
+
+  return (`
+    <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+        ${offersAvailable.map(({ id, title, price }) => (`
+        <div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" value="${id}" ${isItemChecked({ array: offers, curValue: [id] })}>
+          <label class="event__offer-label" for="event-offer-${id}">
+            <span class="event__offer-title">${title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${price}</span>
+          </label>
+        </div>
+      `)).join('')}
+      </div>
+    </section>
+  `)
 }
 
 const createDestinationBlock = (destination) => {
@@ -157,10 +160,10 @@ export default class EditPointView extends AbstractView {
   #point = null;
   #pointGeneralInfo = {};
 
-  constructor({ point = BLANK_POINT, getPointGeneralInfo }) {
+  constructor({ point = BLANK_POINT, pointGeneralInfo }) {
     super();
     this.#point = point;
-    this.#pointGeneralInfo = getPointGeneralInfo(point?.type);
+    this.#pointGeneralInfo = pointGeneralInfo;
   }
 
   get template() {
@@ -172,8 +175,28 @@ export default class EditPointView extends AbstractView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
+  setTypeChangeHandler = (callback) => {
+    this._callback.typeChange = callback;
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+  }
+
+  setOffersChangeHandler = (callback) => {
+    this._callback.offersChange = callback;
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler)
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.submitClick();
+  }
+
+  #typeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.typeChange(evt);
+  }
+
+  #offersChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.offersChange(evt);
   }
 }
