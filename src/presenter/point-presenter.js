@@ -49,12 +49,11 @@ export default class PointPresenter {
 
   #handleOffersChange = (evt) => {
     const offerId = evt.target.value;
+    const offersTemp = [...this.#point.offers];
 
-    // if (this.#point.offers.includes(String(offerId))){
-    //   rezult.filter((offer)=>offer!==offerId);
-    // }
-    console.log([...this.#point.offers, offerId]);
-    //  this.#changeData({ ...this.#point, offers:rezult });
+    const offersRezult = offersTemp?.includes(offerId) ? offersTemp.filter((offer) => offer !== offerId) : [...offersTemp, offerId];
+
+    this.#changeData({ ...this.#point, offers: offersRezult });
   }
 
   #handleFormSubmit = () => {
@@ -68,8 +67,8 @@ export default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointComponent = new PointView({ point, pointGeneralInfo: getPointGeneralInfo(point.type)});
-    this.#pointEditComponent = new EditPointView({ point, pointGeneralInfo: getPointGeneralInfo(point.type)});
+    this.#pointComponent = new PointView({ point, pointGeneralInfo: getPointGeneralInfo(point.type) });
+    this.#pointEditComponent = new EditPointView({ point, pointGeneralInfo: getPointGeneralInfo(point.type) });
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
