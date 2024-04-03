@@ -1,6 +1,7 @@
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
 import { getPointGeneralInfo } from "../mock/point";
+import { Mode } from "../mock/const";
 import { render, replace, remove } from "../framework/render";
 
 export default class PointPresenter {
@@ -8,23 +9,31 @@ export default class PointPresenter {
   #pointEditComponent = null;
   #listContainer = null;
   #changeData = null;
+  #changeMode = null;
   #point = null;
+  #mode = Mode.DEFAULT;
 
-  constructor({ listContainer, changeData }) {
+  constructor({ listContainer, changeData, changeMode }) {
     this.#listContainer = listContainer;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   #replacePointToForm = () => {
     replace(this.#pointEditComponent, this.#pointComponent);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToPoint = () => {
     replace(this.#pointComponent, this.#pointEditComponent);
-    document.removeEventListener('keydown', this.#EscKeyDownHandler);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   }
 
-  #EscKeyDownHandler = (evt) => {
+  #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'ESC') {
       evt.preventDefault();
       this.#replaceFormToPoint();
@@ -81,11 +90,11 @@ export default class PointPresenter {
       return;
     }
 
-    if (this.#listContainer.contains(prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent)
     }
 
-    if (this.#listContainer.contains(prevPointEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#pointEditComponent, prevPointEditComponent)
     }
 
@@ -96,5 +105,11 @@ export default class PointPresenter {
   destroy = () => {
     remove(this.#pointComponent);
     remove(this.#pointEditComponent);
+  }
+
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToPoint();
+    }
   }
 }

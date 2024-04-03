@@ -30,7 +30,7 @@ const SortType = {
   EVENT: 'event',
   TIME: 'time',
   PRICE: 'price',
-  OFFERS:'offers'
+  OFFERS: 'offers'
 };
 
 const DateFormat = {
@@ -42,4 +42,9 @@ const DateFormat = {
   SHORT_TIME: 'mm[M]'
 };
 
-export { NoPointMessage, FilterType, SortType, BLANK_POINT, DateFormat };
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING'
+}
+
+export { NoPointMessage, FilterType, SortType, BLANK_POINT, DateFormat, Mode };

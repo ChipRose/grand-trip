@@ -28,7 +28,7 @@ export default class BoardPresenter {
     this.#pointsModel = pointsModel;
     this.#filters = generateFilter(this.#pointsModel.points);
     this.#sorting = generateSorting(this.#pointsModel.points);
-    console.log('pointsModel',this.#pointsModel.points);
+    console.log('pointsModel', this.#pointsModel.points);
   }
 
   #renderPointsControlPanel = () => {
@@ -52,7 +52,7 @@ export default class BoardPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter({ listContainer: this.#listComponent.element, changeData: this.#handlePointChange });
+    const pointPresenter = new PointPresenter({ listContainer: this.#listComponent.element, changeData: this.#handlePointChange, changeMode: this.#handleModeChange });
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
@@ -94,6 +94,10 @@ export default class BoardPresenter {
   #clearPointList = () => {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
+  }
+
+  #handleModeChange = () => {
+    this.#pointPresenter.forEach((presenter) => presenter.resetView());
   }
 
   init = () => {
