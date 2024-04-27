@@ -30,6 +30,7 @@ export default class PointPresenter {
   #replaceFormToPoint = () => {
     replace(this.#pointComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+
     this.#mode = Mode.DEFAULT;
   }
 
@@ -48,16 +49,15 @@ export default class PointPresenter {
     this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
   }
 
-  #handleTypeChange = (evt) => {
-    if (evt.target.value === this.#point.type) {
+  #handleTypeChange = (type) => {
+    if (type === this.#point.type) {
       return
     }
 
-    this.#changeData({ ...this.#point, type: evt.target.value });
+    this.#changeData({ ...this.#point, type });
   }
 
-  #handleOffersChange = (evt) => {
-    const offerId = evt.target.value;
+  #handleOffersChange = (offerId) => {
     const offersTemp = [...this.#point.offers];
 
     const offersRezult = offersTemp?.includes(offerId) ? offersTemp.filter((offer) => offer !== offerId) : [...offersTemp, offerId];
@@ -91,11 +91,11 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.DEFAULT) {
-      replace(this.#pointComponent, prevPointComponent)
+      replace(this.#pointComponent, prevPointComponent);
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#pointEditComponent, prevPointEditComponent)
+      replace(this.#pointEditComponent, prevPointEditComponent);
     }
 
     remove(prevPointComponent);

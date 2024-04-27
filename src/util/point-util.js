@@ -28,4 +28,32 @@ const getNoPointMessage = (filterType = 'EVERYTHING') => {
 const isPastEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
 const isFutureEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'D');
 
-export { humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime, getNoPointMessage, isPastEvent, isFutureEvent };
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateA === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+const sortPointsUp = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
+};
+
+const sortPointsDown = (pointA, pointB) => {
+  const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
+
+  return weight ?? dayjs(pointB.dateFrom).diff(dayjs(pointA.dateFrom));
+};
+
+export { humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime, getNoPointMessage, isPastEvent, isFutureEvent, sortPointsUp, sortPointsDown };

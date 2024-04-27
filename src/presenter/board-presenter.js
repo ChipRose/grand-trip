@@ -7,8 +7,9 @@ import NewPointButtonView from "../view/new-point-button-view";
 import PointPresenter from "./point-presenter";
 import { render } from '../framework/render';
 import { generateFilter } from "../mock/filter";
-import { generateSorting } from "../mock/sorting";
 import { updateItem } from "../util/common-util";
+import { sortPointsDown } from "../util/point-util";
+import { SortType } from "../mock/const";
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -17,18 +18,30 @@ export default class BoardPresenter {
   #boardPoints = [];
   #filters = [];
   #sorting = [];
+  #sourcedBoardPoints = [];
+  #currentSortType = SortType.DEFALT;
   #pointPresenter = new Map();
 
   #boardComponent = new BoardView();
   #listComponent = new ListView();
+  #sortComponent = new SortView();
 
   constructor({ boardContainer, pointsControlContainer, pointsModel }) {
     this.#boardContainer = boardContainer;
     this.#pointsControlContainer = pointsControlContainer;
     this.#pointsModel = pointsModel;
     this.#filters = generateFilter(this.#pointsModel.points);
-    this.#sorting = generateSorting(this.#pointsModel.points);
     console.log('pointsModel', this.#pointsModel.points);
+  }
+
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case SortType.DAY:
+        this.#boardPoints.sort(sortPointsDown);
+        break;
+      default:
+        this.#boardPoints = [...this.#sourcedBoardPoints];
+    }
   }
 
   #renderPointsControlPanel = () => {
@@ -46,9 +59,8 @@ export default class BoardPresenter {
   }
 
   #renderSortComponent = () => {
-    const sortComponent = new SortView(this.#sorting);
-
-    render(sortComponent, this.#boardComponent.element);
+    render(this.#sortComponent, this.#boardComponent.element);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   #renderPoint = (point) => {
@@ -100,9 +112,18 @@ export default class BoardPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   }
 
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoints(sortType)
+  }
+
   init = () => {
     this.#boardPoints = [...this.#pointsModel.points];
     this.#renderPointsControlPanel();
     this.#renderBoard();
+    this.#sourcedBoardPoints = [...this.#pointsModel.points];
   }
 }

@@ -192,11 +192,11 @@ export default class EditPointView extends AbstractView {
 
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
-    this._callback.typeChange(evt);
+    this._callback.typeChange(evt.target.value);
   }
 
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
-    this._callback.offersChange(evt);
+    this._callback.offersChange(evt.target.value);
   }
 }
