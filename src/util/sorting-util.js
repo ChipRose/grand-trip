@@ -20,7 +20,7 @@ const getWeightForNullDate = (dateA, dateB) => {
 const sortDateDown = (pointA, pointB) => {
   const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
 
-  return weight ?? dayjs(pointA.dateFrom).isBefore(dayjs(pointB.dateFrom)) ? -1 : 1;
+  return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 };
 
 const sortPriceDown = (pointA, pointB) => {
@@ -42,4 +42,4 @@ const sorting = {
   [SortType.OFFERS]: (points) => points,
 }
 
-export { sorting };
+export { sorting, sortDateDown };

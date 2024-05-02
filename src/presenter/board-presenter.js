@@ -8,11 +8,12 @@ import PointPresenter from "./point-presenter";
 import { render } from '../framework/render';
 import { generateFilter } from "../mock/filter";
 import { updateItem } from "../util/common-util";
-import { sortPointsDown } from "../util/point-util";
+import { sortDateDown } from "../util/sorting-util";
 import { SortType } from "../mock/const";
 
 export default class BoardPresenter {
   #boardContainer = null;
+  #sortComponent = null;
   #pointsControlContainer = null;
   #pointsModel = null;
   #boardPoints = [];
@@ -24,24 +25,24 @@ export default class BoardPresenter {
 
   #boardComponent = new BoardView();
   #listComponent = new ListView();
-  #sortComponent = new SortView();
 
   constructor({ boardContainer, pointsControlContainer, pointsModel }) {
     this.#boardContainer = boardContainer;
     this.#pointsControlContainer = pointsControlContainer;
     this.#pointsModel = pointsModel;
     this.#filters = generateFilter(this.#pointsModel.points);
-    console.log('pointsModel', this.#pointsModel.points);
   }
 
   #sortPoints = (sortType) => {
     switch (sortType) {
-      case SortType.DAY:
-        this.#boardPoints.sort(sortPointsDown);
+      case SortType.DEFALT:
+        this.#boardPoints.sort(sortDateDown);
         break;
       default:
         this.#boardPoints = [...this.#sourcedBoardPoints];
     }
+
+    this.#currentSortType = sortType;
   }
 
   #renderPointsControlPanel = () => {
@@ -59,6 +60,8 @@ export default class BoardPresenter {
   }
 
   #renderSortComponent = () => {
+    this.#sortComponent = new SortView(this.#currentSortType);
+
     render(this.#sortComponent, this.#boardComponent.element);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
@@ -100,6 +103,7 @@ export default class BoardPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#boardPoints = updateItem({ items: this.#boardPoints, update: updatedPoint });
+    this.#sourcedBoardPoints = updateItem({ items: this.#sourcedBoardPoints, update: updatedPoint });
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   }
 
@@ -117,7 +121,10 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#sortPoints(sortType)
+    this.#currentSortType = sortType;
+    this.#sortPoints(sortType);
+    this.#clearPointList();
+    this.#renderPointsList();
   }
 
   init = () => {
