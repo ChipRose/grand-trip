@@ -5,10 +5,10 @@ import NoPointsView from "../view/no-points-view";
 import ControlEventsView from "../view/control-events-view";
 import NewPointButtonView from "../view/new-point-button-view";
 import PointPresenter from "./point-presenter";
-import { render } from '../framework/render';
+import { render,replace } from '../framework/render';
 import { generateFilter } from "../mock/filter";
 import { updateItem } from "../util/common-util";
-import { sortDateDown } from "../util/sorting-util";
+import { sortDateDown, sortPriceDown, sortTimeDown } from "../util/sorting-util";
 import { SortType } from "../mock/const";
 
 export default class BoardPresenter {
@@ -38,6 +38,12 @@ export default class BoardPresenter {
       case SortType.DEFALT:
         this.#boardPoints.sort(sortDateDown);
         break;
+      case SortType.PRICE:
+        this.#boardPoints.sort(sortPriceDown);
+        break;
+      case SortType.TIME:
+        this.#boardPoints.sort(sortTimeDown);
+        break;
       default:
         this.#boardPoints = [...this.#sourcedBoardPoints];
     }
@@ -60,9 +66,15 @@ export default class BoardPresenter {
   }
 
   #renderSortComponent = () => {
-    this.#sortComponent = new SortView(this.#currentSortType);
+    if (!this.#sortComponent) {
+      this.#sortComponent = new SortView(this.#currentSortType);
+      render(this.#sortComponent, this.#boardComponent.element);
+    } else {
+      const updatedSortComponent = new SortView(this.#currentSortType);
+      replace(updatedSortComponent, this.#sortComponent);
+      this.#sortComponent = updatedSortComponent;
+    }
 
-    render(this.#sortComponent, this.#boardComponent.element);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
@@ -121,9 +133,9 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#currentSortType = sortType;
     this.#sortPoints(sortType);
     this.#clearPointList();
+    this.#renderSortComponent();
     this.#renderPointsList();
   }
 

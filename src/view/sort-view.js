@@ -3,8 +3,8 @@ import AbstractView from '../framework/view/abstract-view';
 
 const createSortTemplate = (currentSortType) => {
   const sortingType = Object.values(SortType);
-  const isChecked=(sortingName)=>{
-    return sortingName===currentSortType?'checked':''
+  const isChecked = (sortingName) => {
+    return sortingName === currentSortType ? 'checked' : ''
   }
 
   return (`
@@ -33,7 +33,7 @@ export default class SortView extends AbstractView {
 
   setSortTypeChangeHandler = (callback) => {
     this._callback.sortTypeChange = callback;
-    this.element.addEventListener('click',this.#sortTypeChangeHandler);
+    this.element.addEventListener('click', this.#sortTypeChangeHandler);
   }
 
   #sortTypeChangeHandler = (evt) => {
@@ -44,6 +44,5 @@ export default class SortView extends AbstractView {
     evt.preventDefault();
     this.#currentSortType = evt.target.value;
     this._callback.sortTypeChange(evt.target.value);
-    console.log(this.#currentSortType);
   }
 }

@@ -42,4 +42,8 @@ const sorting = {
   [SortType.OFFERS]: (points) => points,
 }
 
-export { sorting, sortDateDown };
+const getSorting = (sortType)=>{
+  return sorting[sortType];
+}
+
+export { getSorting, sortDateDown, sortPriceDown, sortTimeDown };
