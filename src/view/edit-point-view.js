@@ -1,7 +1,8 @@
 import { capitalizeText, isItemChecked } from '../util/common-util';
 import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
-import AbstractView from '../framework/view/abstract-view';
+import { getPointGeneralInfo } from "../mock/point";
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 const createEventTypeList = ({ type, types }) => {
   return (`
@@ -22,7 +23,7 @@ const createEventTypeList = ({ type, types }) => {
 const createEventDestinationList = (destinations) => {
   return (`
     <datalist id="destination-list-1">
-      ${destinations.map(({ title }) => (`
+      ${destinations?.map(({ title }) => (`
         <option value=${title}></option>
       `)).join('')}
     </datalist>
@@ -45,7 +46,7 @@ const createGalleryList = (pictures) => {
 }
 
 const createEventBlock = (point, types, destinations) => {
-  const { type, dateFrom, dateTo, destination } = point || {};
+  const { id, type, dateFrom, dateTo, destination } = point || {};
   const { title } = destination;
 
   const timeStart = humanizePointDateTime(dateFrom);
@@ -54,28 +55,28 @@ const createEventBlock = (point, types, destinations) => {
   return (`
     <header class="event__header">
       <div class="event__type-wrapper">
-        <label class="event__type  event__type-btn" for="event-type-toggle-1">
+        <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
           <span class="visually-hidden">Choose event type</span>
           <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
         </label>
-        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" value=${type} type="checkbox">
+        <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" value=${type} type="checkbox">
         ${createEventTypeList({ type, types })}
       </div>
 
       <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-1">
+        <label class="event__label  event__type-output" for="event-destination-${id}">
         ${capitalizeText(type)}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${title}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${title}" list="destination-list-1">
         ${createEventDestinationList(destinations)}
       </div>
 
       <div class="event__field-group  event__field-group--time">
-        <label class="visually-hidden" for="event-start-time-1">From</label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${timeStart}>
+        <label class="visually-hidden" for="event-start-time-${id}">From</label>
+        <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value=${timeStart}>
         &mdash;
-        <label class="visually-hidden" for="event-end-time-1">To</label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${timeEnd}>
+        <label class="visually-hidden" for="event-end-time-${id}">To</label>
+        <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value=${timeEnd}>
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -132,16 +133,15 @@ const createDestinationBlock = (destination) => {
   }
 }
 
-const createEditPointTemplate = ({ point = {}, pointGeneralInfo = {} }) => {
+const createEditPointTemplate = (point = {}) => {
   const {
     dateFrom,
     dateTo,
     destination,
     type,
     offers,
+    types, offersAvailable, destinations
   } = point;
-
-  const { types, offersAvailable, destinations } = pointGeneralInfo;
 
   return (`
     <li class="trip-events__item">
@@ -156,18 +156,31 @@ const createEditPointTemplate = ({ point = {}, pointGeneralInfo = {} }) => {
   `)
 }
 
-export default class EditPointView extends AbstractView {
-  #point = null;
-  #pointGeneralInfo = {};
+export default class EditPointView extends AbstractStatefulView {
 
-  constructor({ point = BLANK_POINT, pointGeneralInfo }) {
+  constructor({ point = BLANK_POINT }) {
     super();
-    this.#point = point;
-    this.#pointGeneralInfo = pointGeneralInfo;
+    this._state = EditPointView.parsePointToState(point);
   }
 
   get template() {
-    return createEditPointTemplate({ point: this.#point, pointGeneralInfo: this.#pointGeneralInfo });
+    return createEditPointTemplate(this._state);
+  }
+
+  static parsePointToState = (point) => ({
+    ...point,
+    ...getPointGeneralInfo(point.type)
+  })
+
+  static parseStateToPoint = (state) => {
+    const point = { ...state };
+
+    delete point.offersAvailable;
+    delete point.destinations;
+    delete point.types;
+    console.log({ point });
+
+    return point;
   }
 
   setFormSubmitHandler = (callback) => {
@@ -187,7 +200,7 @@ export default class EditPointView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.submitClick();
+    this._callback.submitClick(EditPointView.parseStateToPoint(this._state));
   }
 
   #typeChangeHandler = (evt) => {
