@@ -3,6 +3,8 @@ import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
 import { getPointGeneralInfo, getDestination, getOffersPrice } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 import dayjs from "dayjs";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
@@ -169,6 +171,7 @@ const createEditPointTemplate = (point = {}) => {
 }
 
 export default class EditPointView extends AbstractStatefulView {
+  #datepicker=null;
 
   constructor(point = BLANK_POINT) {
     super();
@@ -195,6 +198,15 @@ export default class EditPointView extends AbstractStatefulView {
     delete point.totalPrice;
 
     return point;
+  }
+
+  removeElement = ()=>{
+    super.removeElement();
+
+    if(this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker=null;
+    }
   }
 
   reset = (point) => {
