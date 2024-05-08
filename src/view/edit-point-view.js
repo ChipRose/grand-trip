@@ -3,6 +3,10 @@ import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
 import { getPointGeneralInfo, getDestination, getOffersPrice } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import dayjs from "dayjs";
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
+
 
 const createEventTypeList = (point) => {
   const { type, types } = point;
@@ -37,10 +41,10 @@ const createEventDestinationList = (point) => {
       <label class="event__label  event__type-output" for="event-destination">
       ${capitalizeText(type)}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.title}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.name}" list="destination-list-1">
       <datalist id="destination-list-1">
-        ${destinations?.map(({ title }) => (`
-          <option value=${title}></option>
+        ${destinations?.map(({ name }) => (`
+          <option value=${name}></option>
         `)).join('')}
       </datalist>
     </div>
@@ -48,18 +52,18 @@ const createEventDestinationList = (point) => {
 }
 
 const createEventTimeBlock = (point) => {
-  const { id, dateFrom, dateTo } = point;
+  const { dateFrom, dateTo } = point;
 
   const timeStart = humanizePointDateTime(dateFrom);
   const timeEnd = humanizePointDateTime(dateTo);
 
   return (`
     <div class="event__field-group  event__field-group--time">
-      <label class="visually-hidden" for="event-start-time-${id}">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value=${timeStart}>
+      <label class="visually-hidden" for="event-start-time">From</label>
+      <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value=${timeStart}>
       &mdash;
-      <label class="visually-hidden" for="event-end-time-${id}">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value=${timeEnd}>
+      <label class="visually-hidden" for="event-end-time">To</label>
+      <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value=${timeEnd}>
     </div>
   `)
 }
@@ -84,8 +88,8 @@ const createGalleryList = (pictures) => {
   return (`
     <div class="event__photos-container">
       <div class="event__photos-tape">
-        ${pictures.map(({ src, alt }) => (`
-          <img class="event__photo" src=${src} alt=${alt}>
+        ${pictures.map(({ src, description }) => (`
+          <img class="event__photo" src=${src} alt=${description}>
         `)).join('')}
       </div>
     </div>
@@ -209,7 +213,8 @@ export default class EditPointView extends AbstractStatefulView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
-    this.element.querySelector('.event__field-group').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__field-group--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__field-group--time').addEventListener('change', this.#dateChangeHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
   }
 
@@ -231,9 +236,25 @@ export default class EditPointView extends AbstractStatefulView {
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
 
-    this.updateElement({
-      ...getDestination(evt.target.value),
-    });
+    this.updateElement(
+      getDestination(evt.target.value),
+    );
+  }
+
+  #dateChangeHandler = (evt)=>{
+    evt.preventDefault();
+
+    if (evt.target.id==='event-start-time') {
+      this._setState({
+        dateFrom: dayjs(evt.target.value, "DD/MM/YY HH:mm")
+      })
+    }
+
+    if (evt.target.id==='event-end-time') {
+      this._setState({
+        dateTo: dayjs(evt.target.value, "DD/MM/YY HH:mm")
+      })
+    }
   }
 
   #offersChangeHandler = (evt) => {

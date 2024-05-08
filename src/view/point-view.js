@@ -25,9 +25,9 @@ const createOffersListBlock = (pointState) => {
 
 const createPointTemplate = (pointState) => {
   const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite } = pointState;
-  const { title = '' } = destination;
+  const { name = '' } = destination;
 
-  const pointTitle = `${type} ${title}`;
+  const pointTitle = `${type} ${name}`;
   const timeStart = humanizePointTime(dateFrom);
   const timeEnd = humanizePointTime(dateTo);
   const durationTime = formatDurationTime({ dateFrom, dateTo });
