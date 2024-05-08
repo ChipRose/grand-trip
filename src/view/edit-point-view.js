@@ -171,7 +171,7 @@ const createEditPointTemplate = (point = {}) => {
 }
 
 export default class EditPointView extends AbstractStatefulView {
-  #datepicker=null;
+  #datepicker = null;
 
   constructor(point = BLANK_POINT) {
     super();
@@ -200,12 +200,12 @@ export default class EditPointView extends AbstractStatefulView {
     return point;
   }
 
-  removeElement = ()=>{
+  removeElement = () => {
     super.removeElement();
 
-    if(this.#datepicker) {
+    if (this.#datepicker) {
       this.#datepicker.destroy();
-      this.#datepicker=null;
+      this.#datepicker = null;
     }
   }
 
@@ -223,11 +223,24 @@ export default class EditPointView extends AbstractStatefulView {
     this.setFormSubmitHandler(this._callback.submitClick);
   }
 
+  #setDatepicker = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('.event__field-group--time'), {
+      mode: "range",
+      dateFormat: "d/m/Y H:i",
+
+      defaultDate: [this._state.dateFrom, this._state.dateTo],
+
+      onChange: this.#dateChangeHandler,
+    }
+    )
+  }
+
   #setInnerHandlers = () => {
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
     this.element.querySelector('.event__field-group--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector('.event__field-group--time').addEventListener('change', this.#dateChangeHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.#setDatepicker();
   }
 
   #formSubmitHandler = (evt) => {
@@ -253,20 +266,11 @@ export default class EditPointView extends AbstractStatefulView {
     );
   }
 
-  #dateChangeHandler = (evt)=>{
-    evt.preventDefault();
-
-    if (evt.target.id==='event-start-time') {
-      this._setState({
-        dateFrom: dayjs(evt.target.value, "DD/MM/YY HH:mm")
-      })
-    }
-
-    if (evt.target.id==='event-end-time') {
-      this._setState({
-        dateTo: dayjs(evt.target.value, "DD/MM/YY HH:mm")
-      })
-    }
+  #dateChangeHandler = ([dateFrom, dateTo]) => {
+    this.updateElement({
+      dateFrom,
+      dateTo
+    })
   }
 
   #offersChangeHandler = (evt) => {
