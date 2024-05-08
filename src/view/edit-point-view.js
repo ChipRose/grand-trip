@@ -1,19 +1,19 @@
 import { capitalizeText, isItemChecked } from '../util/common-util';
 import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
-import { getPointGeneralInfo } from "../mock/point";
+import { getPointGeneralInfo, getDestination, getOffersPrice } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 const createEventTypeList = (point) => {
-  const { id, type, types } = point;
+  const { type, types } = point;
 
   return (`
     <div class="event__type-wrapper">
-      <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
+      <label class="event__type  event__type-btn" for="event-type-toggle">
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" value=${type} type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle" value=${type} type="checkbox">
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Event type</legend>
@@ -30,13 +30,14 @@ const createEventTypeList = (point) => {
 }
 
 const createEventDestinationList = (point) => {
-  const { id, type, destinations, destination } = point;
+  const { type, destinations, destination } = point;
+
   return (`
     <div class="event__field-group  event__field-group--destination">
-      <label class="event__label  event__type-output" for="event-destination-${id}">
+      <label class="event__label  event__type-output" for="event-destination">
       ${capitalizeText(type)}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destination.title}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.title}" list="destination-list-1">
       <datalist id="destination-list-1">
         ${destinations?.map(({ title }) => (`
           <option value=${title}></option>
@@ -64,14 +65,14 @@ const createEventTimeBlock = (point) => {
 }
 
 const createEventPriceBlock = (point) => {
-  const { id } = point;
+  const { totalPrice } = point;
   return (`
     <div class="event__field-group  event__field-group--price">
-      <label class="event__label" for="event-price-${id}">
+      <label class="event__label" for="event-price">
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="">
+      <input class="event__input  event__input--price" id="event-price" type="text" name="event-price" value=${totalPrice}>
     </div>
   `)
 }
@@ -165,9 +166,10 @@ const createEditPointTemplate = (point = {}) => {
 
 export default class EditPointView extends AbstractStatefulView {
 
-  constructor({ point = BLANK_POINT }) {
+  constructor(point = BLANK_POINT) {
     super();
     this._state = EditPointView.parsePointToState(point);
+    this.#setInnerHandlers();
   }
 
   get template() {
@@ -176,6 +178,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   static parsePointToState = (point) => ({
     ...point,
+    totalPrice: getOffersPrice(point.offers).offersPrice + point.basePrice,
     ...getPointGeneralInfo(point.type)
   })
 
@@ -185,9 +188,13 @@ export default class EditPointView extends AbstractStatefulView {
     delete point.offersAvailable;
     delete point.destinations;
     delete point.types;
-    console.log({ point });
+    delete point.totalPrice;
 
     return point;
+  }
+
+  reset = (point) => {
+    this.updateElement(EditPointView.parsePointToState(point));
   }
 
   setFormSubmitHandler = (callback) => {
@@ -195,14 +202,15 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
-  setTypeChangeHandler = (callback) => {
-    this._callback.typeChange = callback;
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.submitClick);
   }
 
-  setOffersChangeHandler = (callback) => {
-    this._callback.offersChange = callback;
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler)
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
+    this.element.querySelector('.event__field-group').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
   }
 
   #formSubmitHandler = (evt) => {
@@ -212,11 +220,32 @@ export default class EditPointView extends AbstractStatefulView {
 
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
-    this._callback.typeChange(evt.target.value);
+
+    this.updateElement({
+      type: evt.target.value,
+      ...getPointGeneralInfo(evt.target.value),
+      offers: []
+    });
+  }
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    this.updateElement({
+      ...getDestination(evt.target.value),
+    });
   }
 
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
-    this._callback.offersChange(evt.target.value);
+
+    const offerId = evt.target.value;
+    const offersTemp = [...this._state.offers];
+    const offersRezult = offersTemp?.includes(offerId) ? offersTemp.filter((offer) => offer !== offerId) : [...offersTemp, offerId];
+
+    this.updateElement({
+      offers: offersRezult,
+      totalPrice: getOffersPrice(offersRezult).offersPrice + this._state.basePrice,
+    });
   }
 }

@@ -1,6 +1,5 @@
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
-import { getPointGeneralInfo } from "../mock/point";
 import { Mode } from "../mock/const";
 import { render, replace, remove } from "../framework/render";
 
@@ -37,6 +36,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'ESC') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }
@@ -49,24 +49,8 @@ export default class PointPresenter {
     this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
   }
 
-  #handleTypeChange = (type) => {
-    if (type === this.#point.type) {
-      return
-    }
-
-    this.#changeData({ ...this.#point, type });
-  }
-
-  #handleOffersChange = (offerId) => {
-    const offersTemp = [...this.#point.offers];
-
-    const offersRezult = offersTemp?.includes(offerId) ? offersTemp.filter((offer) => offer !== offerId) : [...offersTemp, offerId];
-
-    this.#changeData({ ...this.#point, offers: offersRezult });
-  }
-
-  #handleFormSubmit = () => {
-    this.#changeData(this.#point);
+  #handleFormSubmit = (point) => {
+    this.#changeData(point);
     this.#replaceFormToPoint();
   }
 
@@ -76,14 +60,12 @@ export default class PointPresenter {
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointComponent = new PointView({ point, pointGeneralInfo: getPointGeneralInfo(point.type) });
-    this.#pointEditComponent = new EditPointView({ point });
+    this.#pointComponent = new PointView(point);
+    this.#pointEditComponent = new EditPointView(point);
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#pointEditComponent.setTypeChangeHandler(this.#handleTypeChange);
-    this.#pointEditComponent.setOffersChangeHandler(this.#handleOffersChange);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#listContainer);
@@ -109,6 +91,7 @@ export default class PointPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }

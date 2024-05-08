@@ -1,28 +1,30 @@
 import AbstractView from '../framework/view/abstract-view';
+import { getPointGeneralInfo } from '../mock/point';
 import { humanizePointDate, humanizePointTime, formatDurationTime } from '../util/point-util';
 
-const createOffersListBlock = ({ selectedOffers = [], pointGeneralInfo = {} }) => {
-  const checkedOffers = pointGeneralInfo.offersAvailable?.filter((offer) => selectedOffers.includes(offer.id));
+const createOffersListBlock = (pointState) => {
+  const { offersAvailable, offers } = pointState;
+  const checkedOffers = offersAvailable?.filter((offer) => offers.includes(offer.id));
 
-  if (!selectedOffers.length) {
+  if (!offers.length) {
     return ('')
   }
 
   return (`
     <ul class="event__selected-offers">
       ${checkedOffers.map(({ title, price }) => (
-      `<li class="event__offer">
+    `<li class="event__offer">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
         <span class="event__offer-price">${price}</span>
       </li>`
-    )).join('')}
+  )).join('')}
     </ul>
   `)
 }
 
-const createPointTemplate = ({ point, pointGeneralInfo }) => {
-  const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite, offers: selectedOffers } = point;
+const createPointTemplate = (pointState) => {
+  const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite } = pointState;
   const { title = '' } = destination;
 
   const pointTitle = `${type} ${title}`;
@@ -51,7 +53,7 @@ const createPointTemplate = ({ point, pointGeneralInfo }) => {
           &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
-        ${createOffersListBlock({ selectedOffers, pointGeneralInfo })}
+        ${createOffersListBlock(pointState)}
         <button class="event__favorite-btn ${favoriteClass}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -68,16 +70,14 @@ const createPointTemplate = ({ point, pointGeneralInfo }) => {
 
 export default class PointView extends AbstractView {
   #point = null;
-  #pointGeneralInfo = {};
 
-  constructor({ point, pointGeneralInfo }) {
+  constructor(point) {
     super();
     this.#point = point;
-    this.#pointGeneralInfo = pointGeneralInfo;
   }
 
   get template() {
-    return createPointTemplate({ point: this.#point, pointGeneralInfo: this.#pointGeneralInfo });
+    return createPointTemplate({ ...this.#point, ...getPointGeneralInfo(this.#point.type) });
   }
 
   setOpenClickHandler = (callback) => {

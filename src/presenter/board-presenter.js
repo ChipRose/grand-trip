@@ -18,7 +18,6 @@ export default class BoardPresenter {
   #pointsModel = null;
   #boardPoints = [];
   #filters = [];
-  #sorting = [];
   #sourcedBoardPoints = [];
   #currentSortType = SortType.DEFALT;
   #pointPresenter = new Map();

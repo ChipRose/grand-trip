@@ -125,18 +125,42 @@ export const getPointGeneralInfo = (type) => {
   })
 }
 
+export const getDestination = (name) => {
+
+  const destination = destinations.find(({ title }) => title === name);
+
+  if (!destination) {
+    return
+  }
+
+  return ({
+    destination
+  });
+}
+
+export const getOffersPrice = (offersSelected) => {
+  let offersPrice = 0;
+
+  offersSelected.forEach((offerSelected) => {
+    offersPrice += offers.find(({ id }) => id === offerSelected).price;
+  });
+
+  return ({offersPrice});
+}
+
 export const generatePoint = () => {
   const date = getRandomDate();
   const type = getRandItemArray(types);
   const offersAvailable = getOffersByType(type);
   const offersSelected = getRandPartArray(offersAvailable);
+  const destinationName = destinations[getRandomInteger(0, destinations.length - 1)].title;
 
   return ({
     id: nanoid(),
     basePrice: getRandomInteger(200, 1000),
     dateFrom: date.dateFrom,
     dateTo: date.dateTo,
-    destination: destinations[getRandomInteger(0, destinations.length - 1)],
+    ...getDestination(destinationName),
     type,
     offers: offersSelected,
     isFavorite: Boolean(getRandomInteger()),
