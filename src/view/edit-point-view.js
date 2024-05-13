@@ -4,10 +4,9 @@ import { BLANK_POINT } from '../mock/const';
 import { getPointGeneralInfo, getDestination, getOffersPrice } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import flatpickr from 'flatpickr';
+import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
-import dayjs from "dayjs";
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-dayjs.extend(customParseFormat);
+import { getUtcDate } from '../util/point-util';
 
 
 const createEventTypeList = (point) => {
@@ -62,10 +61,10 @@ const createEventTimeBlock = (point) => {
   return (`
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time">From</label>
-      <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value=${timeStart}>
+      <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value=${dateFrom}>
       &mdash;
       <label class="visually-hidden" for="event-end-time">To</label>
-      <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value=${timeEnd}>
+      <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value=${dateTo}>
     </div>
   `)
 }
@@ -106,7 +105,6 @@ const createEventBlock = (point) => {
       ${createEventDestinationList(point)}
       ${createEventTimeBlock(point)}
       ${createEventPriceBlock(point)}
-
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Cancel</button>
     </header>
@@ -225,13 +223,16 @@ export default class EditPointView extends AbstractStatefulView {
 
   #setDatepicker = () => {
     this.#datepicker = flatpickr(
-      this.element.querySelector('.event__field-group--time'), {
-      mode: "range",
-      dateFormat: "d/m/Y H:i",
-
-      defaultDate: [this._state.dateFrom, this._state.dateTo],
-
-      onChange: this.#dateChangeHandler,
+      this.element.querySelector('#event-start-time'), {
+      enableTime: true,
+      time_24hr: true,
+      dateFormat: "d/m/y H:i",
+      onClose: this.#dateChangeHandler,
+      plugins: [
+        new rangePlugin({
+          input: this.element.querySelector('#event-end-time'),
+        })
+      ],
     }
     )
   }
@@ -267,9 +268,13 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #dateChangeHandler = ([dateFrom, dateTo]) => {
+    if (!dateFrom || !dateTo) {
+      return
+    }
+
     this.updateElement({
-      dateFrom,
-      dateTo
+      dateFrom: getUtcDate(dateFrom),
+      dateTo: getUtcDate(dateTo)
     })
   }
 

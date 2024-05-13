@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
-import { getRandPartArray, getRandItemArray, getRandomInteger, getRandomDate } from '../util/common-util';
+import { getRandPartArray, getRandItemArray, getRandomInteger } from '../util/common-util';
+import { getRandomDate } from '../util/point-util';
 
 const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 

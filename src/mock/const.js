@@ -37,6 +37,7 @@ const DateFormat = {
   DATE: 'MMM D',
   TIME: 'HH:mm',
   DATE_TIME: 'DD[/]MM[/]YY[&nbsp;]HH[:]mm',
+  FULL_TIME: 'MM[MON] DD[D] HH[H] mm[M]',
   LONG_TIME: 'DD[D] HH[H] mm[M]',
   MIDDLE_TIME: 'HH[H] mm[M]',
   SHORT_TIME: 'mm[M]'
