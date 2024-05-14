@@ -35,7 +35,6 @@ export default class PointPresenter {
 
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'ESC') {
-      evt.preventDefault();
       this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
@@ -43,6 +42,11 @@ export default class PointPresenter {
 
   #handleOpenClick = () => {
     this.#replacePointToForm();
+  }
+
+  #resetClickHandler = () => {
+    this.#pointEditComponent.reset(this.#point);
+    this.#replaceFormToPoint();
   }
 
   #handleFavoriteClick = () => {
@@ -66,6 +70,7 @@ export default class PointPresenter {
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setResetClickHandler(this.#resetClickHandler);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#listContainer);

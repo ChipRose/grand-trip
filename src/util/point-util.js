@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
 import utc from 'dayjs/plugin/utc';
+dayjs.extend(duration).extend(utc);
 import { NoPointMessage, DateFormat } from "../mock/const";
 import { getRandomInteger, getNullFormat } from "./common-util";
-dayjs.extend(duration);
-dayjs.extend(utc);
+import { getOffersByType } from "../mock/point";
 
 const humanizePointDate = (date) => dayjs(date).format(DateFormat.DATE) || '';
 const humanizePointDateTime = (date) => dayjs(date).format(DateFormat.DATE_TIME) || '';
@@ -20,7 +20,6 @@ const getRandomDate = () => {
 
   return { dateFrom, dateTo, hourFrom, minutesFrom };
 };
-
 
 const getDurationTime = ({ dateFrom, dateTo }) => {
   const dateStart = dayjs(dateFrom);
@@ -40,7 +39,7 @@ const formatDurationTime = ({ dateFrom, dateTo }) => {
   Object.entries(date).forEach(([key, value]) => {
     if (value) rez += getNullFormat(value) + key + ' '
   })
-  return rez.trim()
+  return rez.trim();
 };
 
 const getNoPointMessage = (filterType = 'EVERYTHING') => {
@@ -50,4 +49,16 @@ const getNoPointMessage = (filterType = 'EVERYTHING') => {
 const isPastEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
 const isFutureEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'D');
 
-export { getRandomDate, getUtcDate, humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime, getNoPointMessage, isPastEvent, isFutureEvent };
+const getOffersPrice = ({ type, offersSelected }) => {
+  let offersPrice = 0;
+
+  offersSelected?.forEach((offerSelected) => {
+    const price = getOffersByType(type).find(({ id }) => id.toString() === offerSelected)?.price || 0;
+    offersPrice += price;
+  });
+
+  return ({ offersPrice });
+}
+
+
+export { getOffersPrice, getRandomDate, getUtcDate, humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime, getNoPointMessage, isPastEvent, isFutureEvent };

@@ -831,47 +831,214 @@ const destinations = [
   }
 ]
 
-const offers = [
+const offersByType = [
   {
-    id: '1',
-    title: 'Upgrade to a business class',
-    price: getRandomInteger(100, 500),
+    "type": "taxi",
+    "offers": [
+      {
+        "id": 1,
+        "title": "Upgrade to a business class",
+        "price": 190
+      },
+      {
+        "id": 2,
+        "title": "Choose the radio station",
+        "price": 30
+      },
+      {
+        "id": 3,
+        "title": "Choose temperature",
+        "price": 170
+      },
+      {
+        "id": 4,
+        "title": "Drive quickly, I'm in a hurry",
+        "price": 100
+      },
+      {
+        "id": 5,
+        "title": "Drive slowly",
+        "price": 110
+      }
+    ]
   },
   {
-    id: '2',
-    title: 'Add luggage',
-    price: getRandomInteger(100, 500),
+    "type": "bus",
+    "offers": [
+      {
+        "id": 1,
+        "title": "Infotainment system",
+        "price": 50
+      },
+      {
+        "id": 2,
+        "title": "Order meal",
+        "price": 100
+      },
+      {
+        "id": 3,
+        "title": "Choose seats",
+        "price": 190
+      }
+    ]
   },
   {
-    id: '3',
-    title: 'Switch to comfort class',
-    price: getRandomInteger(100, 500),
+    "type": "train",
+    "offers": [
+      {
+        "id": 1,
+        "title": "Book a taxi at the arrival point",
+        "price": 110
+      },
+      {
+        "id": 2,
+        "title": "Order a breakfast",
+        "price": 80
+      },
+      {
+        "id": 3,
+        "title": "Wake up at a certain time",
+        "price": 140
+      }
+    ]
   },
   {
-    id: '4',
-    title: 'Add meal',
-    price: getRandomInteger(100, 500),
+    "type": "flight",
+    "offers": [
+      {
+        "id": 1,
+        "title": "Choose meal",
+        "price": 120
+      },
+      {
+        "id": 2,
+        "title": "Choose seats",
+        "price": 90
+      },
+      {
+        "id": 3,
+        "title": "Upgrade to comfort class",
+        "price": 120
+      },
+      {
+        "id": 4,
+        "title": "Upgrade to business class",
+        "price": 120
+      },
+      {
+        "id": 5,
+        "title": "Add luggage",
+        "price": 170
+      },
+      {
+        "id": 6,
+        "title": "Business lounge",
+        "price": 160
+      }
+    ]
   },
   {
-    id: '5',
-    title: 'Choose seats',
-    price: getRandomInteger(100, 500),
+    "type": "check-in",
+    "offers": [
+      {
+        "id": 1,
+        "title": "Choose the time of check-in",
+        "price": 70
+      },
+      {
+        "id": 2,
+        "title": "Choose the time of check-out",
+        "price": 190
+      },
+      {
+        "id": 3,
+        "title": "Add breakfast",
+        "price": 110
+      },
+      {
+        "id": 4,
+        "title": "Laundry",
+        "price": 140
+      },
+      {
+        "id": 5,
+        "title": "Order a meal from the restaurant",
+        "price": 30
+      }
+    ]
   },
   {
-    id: '6',
-    title: 'Travel by train',
-    price: getRandomInteger(100, 500),
+    "type": "sightseeing",
+    "offers": []
   },
+  {
+    "type": "ship",
+    "offers": [
+      {
+        "id": 1,
+        "title": "Choose meal",
+        "price": 130
+      },
+      {
+        "id": 2,
+        "title": "Choose seats",
+        "price": 160
+      },
+      {
+        "id": 3,
+        "title": "Upgrade to comfort class",
+        "price": 170
+      },
+      {
+        "id": 4,
+        "title": "Upgrade to business class",
+        "price": 150
+      },
+      {
+        "id": 5,
+        "title": "Add luggage",
+        "price": 100
+      },
+      {
+        "id": 6,
+        "title": "Business lounge",
+        "price": 40
+      }
+    ]
+  },
+  {
+    "type": "drive",
+    "offers": [
+      {
+        "id": 1,
+        "title": "With automatic transmission",
+        "price": 110
+      },
+      {
+        "id": 2,
+        "title": "With air conditioning",
+        "price": 180
+      }
+    ]
+  },
+  {
+    "type": "restaurant",
+    "offers": [
+      {
+        "id": 1,
+        "title": "Choose live music",
+        "price": 150
+      },
+      {
+        "id": 2,
+        "title": "Choose VIP area",
+        "price": 70
+      }
+    ]
+  }
 ];
 
-const offersByType = types.map((type) => {
-  return ({
-    type,
-    offers: getRandPartArray(offers).map(({ id }) => id),
-  })
-});
-
-const getOffersByType = (offerType) => (offersByType.find(({ type }) => type === offerType).offers);
+export const getOffersByType = (offerType) => (offersByType.find(({ type }) => type === offerType).offers);
 
 const getItemsById = ({ array = [], itemsId = [] }) => {
   return itemsId?.map((curId) => array?.find((item) => String(item.id) === String(curId)))
@@ -881,7 +1048,7 @@ export const getPointGeneralInfo = (type) => {
   return ({
     types,
     destinations,
-    offersAvailable: getItemsById({ array: offers, itemsId: getOffersByType(type) }),
+    offersAvailable: getOffersByType(type),
   })
 }
 
@@ -898,29 +1065,19 @@ export const getDestination = (name) => {
   });
 }
 
-export const getOffersPrice = (offersSelected) => {
-  let offersPrice = 0;
-
-  offersSelected.forEach((offerSelected) => {
-    offersPrice += offers.find(({ id }) => id === offerSelected).price;
-  });
-
-  return ({ offersPrice });
-}
 
 export const generatePoint = () => {
   const date = getRandomDate();
   const type = getRandItemArray(types);
   const offersAvailable = getOffersByType(type);
-  const offersSelected = getRandPartArray(offersAvailable);
-  const destinationName = destinations[getRandomInteger(0, destinations.length - 1)].name;
+  const offersSelected = getRandPartArray(offersAvailable.map(({ id }) => id.toString()));
 
   return ({
     id: nanoid(),
     basePrice: getRandomInteger(200, 1000),
     dateFrom: date.dateFrom,
     dateTo: date.dateTo,
-    ...getDestination(destinationName),
+    destination: destinations[getRandomInteger(0, destinations.length)],
     type,
     offers: offersSelected,
     isFavorite: Boolean(getRandomInteger()),

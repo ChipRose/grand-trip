@@ -43,6 +43,10 @@ const isItemChecked = ({ curValue, array }) => {
   }
 }
 
+const isChecked = ({ array, curId }) => {
+  return array.includes(curId.toString()) ? 'checked' : ''
+}
+
 const updateItem = ({ items, update }) => {
   const index = items.findIndex((item) => item.id === update.id);
   const rezult = items.slice();
@@ -56,4 +60,4 @@ const updateItem = ({ items, update }) => {
   return rezult;
 }
 
-export { getRandomInteger, getNullFormat, getRandPartArray, getRandItemArray, capitalizeText, isItemChecked, updateItem };
+export { isChecked, getRandomInteger, getNullFormat, getRandPartArray, getRandItemArray, capitalizeText, isItemChecked, updateItem };

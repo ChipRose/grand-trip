@@ -1,12 +1,12 @@
-import { capitalizeText, isItemChecked } from '../util/common-util';
+import { capitalizeText, isItemChecked, isChecked } from '../util/common-util';
 import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
-import { getPointGeneralInfo, getDestination, getOffersPrice } from "../mock/point";
+import { getPointGeneralInfo, getDestination } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import { getUtcDate, getOffersPrice } from '../util/point-util';
 import flatpickr from 'flatpickr';
 import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
-import { getUtcDate } from '../util/point-util';
 
 
 const createEventTypeList = (point) => {
@@ -42,7 +42,7 @@ const createEventDestinationList = (point) => {
       <label class="event__label  event__type-output" for="event-destination">
       ${capitalizeText(type)}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.name}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.name || ''}" list="destination-list-1">
       <datalist id="destination-list-1">
         ${destinations?.map(({ name }) => (`
           <option value=${name}></option>
@@ -61,10 +61,10 @@ const createEventTimeBlock = (point) => {
   return (`
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time">From</label>
-      <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value=${dateFrom}>
+      <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value=${timeStart}>
       &mdash;
       <label class="visually-hidden" for="event-end-time">To</label>
-      <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value=${dateTo}>
+      <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value=${timeEnd}>
     </div>
   `)
 }
@@ -86,6 +86,7 @@ const createGalleryList = (pictures) => {
   if (!pictures?.length) {
     return ''
   }
+
   return (`
     <div class="event__photos-container">
       <div class="event__photos-tape">
@@ -124,7 +125,7 @@ const createOffersBlock = (point) => {
       <div class="event__available-offers">
         ${offersAvailable.map(({ id, title, price }) => (`
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" value="${id}" ${isItemChecked({ array: offers, curValue: [id] })}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" value="${id}" ${isChecked({ array: offers, curId: id })}>
           <label class="event__offer-label" for="event-offer-${id}">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
@@ -139,6 +140,10 @@ const createOffersBlock = (point) => {
 
 const createDestinationBlock = (point) => {
   const { pictures, description } = point.destination || {};
+
+  if (!description) {
+    return ''
+  }
 
   if (description) {
     return (`
@@ -183,7 +188,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   static parsePointToState = (point) => ({
     ...point,
-    totalPrice: getOffersPrice(point.offers).offersPrice + point.basePrice,
+    totalPrice: getOffersPrice({ type: point.type, offersSelected: point.offers }).offersPrice + point.basePrice,
     ...getPointGeneralInfo(point.type)
   })
 
@@ -216,9 +221,15 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
+  setResetClickHandler = (callback) => {
+    this._callback.resetClick = callback;
+    this.element.querySelector('form').addEventListener('reset', this.#formResetHandler);
+  };
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.submitClick);
+    this.setResetClickHandler(this._callback.resetClick);
   }
 
   #setDatepicker = () => {
@@ -249,6 +260,11 @@ export default class EditPointView extends AbstractStatefulView {
     this._callback.submitClick(EditPointView.parseStateToPoint(this._state));
   }
 
+  #formResetHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.resetClick();
+  }
+
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
 
@@ -261,6 +277,12 @@ export default class EditPointView extends AbstractStatefulView {
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
+
+    if (evt.target.value === '') {
+      this.updateElement({
+        destination: null,
+      })
+    }
 
     this.updateElement(
       getDestination(evt.target.value),
@@ -287,7 +309,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       offers: offersRezult,
-      totalPrice: getOffersPrice(offersRezult).offersPrice + this._state.basePrice,
+      totalPrice: getOffersPrice({ type: this._state.type, offersSelected: offersRezult }).offersPrice + this._state.basePrice,
     });
   }
 }
