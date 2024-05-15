@@ -1,6 +1,6 @@
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
-import { Mode } from "../mock/const";
+import { Mode, UpdateType, UserAction } from "../mock/const";
 import { render, replace, remove } from "../framework/render";
 
 export default class PointPresenter {
@@ -50,11 +50,21 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#changeData({
+      actionType: UserAction.UPDATE_POINT,
+      updateType: UpdateType.MINOR,
+      update: {
+        ...this.#point, isFavorite: !this.#point.isFavorite
+      }
+    });
   }
 
   #handleFormSubmit = (point) => {
-    this.#changeData(point);
+    this.#changeData({
+      actionType: UserAction.UPDATE_POINT,
+      updateType: UpdateType.MINOR,
+      update: point
+    });
     this.#replaceFormToPoint();
   }
 

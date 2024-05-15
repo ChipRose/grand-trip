@@ -9,8 +9,8 @@ import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
 
 
-const createEventTypeList = (point) => {
-  const { type, types } = point;
+const createEventTypeList = (pointState) => {
+  const { type, types } = pointState;
 
   return (`
     <div class="event__type-wrapper">
@@ -34,8 +34,8 @@ const createEventTypeList = (point) => {
   `)
 }
 
-const createEventDestinationList = (point) => {
-  const { type, destinations, destination } = point;
+const createEventDestinationList = (pointState) => {
+  const { type, destinations, destination } = pointState;
 
   return (`
     <div class="event__field-group  event__field-group--destination">
@@ -52,8 +52,8 @@ const createEventDestinationList = (point) => {
   `)
 }
 
-const createEventTimeBlock = (point) => {
-  const { dateFrom, dateTo } = point;
+const createEventTimeBlock = (pointState) => {
+  const { dateFrom, dateTo } = pointState;
 
   const timeStart = humanizePointDateTime(dateFrom);
   const timeEnd = humanizePointDateTime(dateTo);
@@ -69,8 +69,8 @@ const createEventTimeBlock = (point) => {
   `)
 }
 
-const createEventPriceBlock = (point) => {
-  const { totalPrice } = point;
+const createEventPriceBlock = (pointState) => {
+  const { totalPrice } = pointState;
   return (`
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price">
@@ -98,15 +98,16 @@ const createGalleryList = (pictures) => {
   `)
 }
 
-const createEventBlock = (point) => {
+const createEventBlock = (pointState) => {
+  const { isSubmitDisabled } = pointState;
 
   return (`
     <header class="event__header">
-      ${createEventTypeList(point)}
-      ${createEventDestinationList(point)}
-      ${createEventTimeBlock(point)}
-      ${createEventPriceBlock(point)}
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+      ${createEventTypeList(pointState)}
+      ${createEventDestinationList(pointState)}
+      ${createEventTimeBlock(pointState)}
+      ${createEventPriceBlock(pointState)}
+      <button class="event__save-btn  btn  btn--blue" ${isSubmitDisabled} type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Cancel</button>
     </header>
   `)
@@ -189,7 +190,8 @@ export default class EditPointView extends AbstractStatefulView {
   static parsePointToState = (point) => ({
     ...point,
     totalPrice: getOffersPrice({ type: point.type, offersSelected: point.offers }).offersPrice + point.basePrice,
-    ...getPointGeneralInfo(point.type)
+    ...getPointGeneralInfo(point.type),
+    isSubmitDisabled: !point.destination || !point.dateFrom || !point.dateTo ? 'disabled' : '',
   })
 
   static parseStateToPoint = (state) => {
@@ -199,6 +201,7 @@ export default class EditPointView extends AbstractStatefulView {
     delete point.destinations;
     delete point.types;
     delete point.totalPrice;
+    delete point.isSubmitDisabled;
 
     return point;
   }
@@ -281,6 +284,7 @@ export default class EditPointView extends AbstractStatefulView {
     if (evt.target.value === '') {
       this.updateElement({
         destination: null,
+        isSubmitDisabled: 'disabled'
       })
     }
 
@@ -291,6 +295,11 @@ export default class EditPointView extends AbstractStatefulView {
 
   #dateChangeHandler = ([dateFrom, dateTo]) => {
     if (!dateFrom || !dateTo) {
+      this.updateElement({
+        isSubmitDisabled: 'disabled',
+        dateFrom: null,
+        dateTo: null
+      })
       return
     }
 

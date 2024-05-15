@@ -1,4 +1,4 @@
-const BLANK_POINT = {
+export const BLANK_POINT = {
   id: '0',
   basePrice: 0,
   dateFrom: null,
@@ -13,19 +13,19 @@ const BLANK_POINT = {
   isFavorite: false
 }
 
-const NoPointMessage = {
+export const NoPointMessage = {
   EVERYTHING: 'Click New Event to create your first point',
   FUTURE: 'There are no past events now',
   PAST: 'There are no future events now',
 };
 
-const FilterType = {
+export const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past'
 };
 
-const SortType = {
+export const SortType = {
   DEFALT: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -33,7 +33,7 @@ const SortType = {
   OFFERS: 'offers'
 };
 
-const DateFormat = {
+export const DateFormat = {
   DATE: 'MMM D',
   TIME: 'HH:mm',
   DATE_TIME: 'DD[/]MM[/]YY[&nbsp;]HH[:]mm',
@@ -43,9 +43,19 @@ const DateFormat = {
   SHORT_TIME: 'mm[M]'
 };
 
-const Mode = {
+export const Mode = {
   DEFAULT: 'DEFAULT',
   EDITING: 'EDITING'
-}
+};
 
-export { NoPointMessage, FilterType, SortType, BLANK_POINT, DateFormat, Mode };
+export const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT'
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
