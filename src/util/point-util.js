@@ -6,13 +6,13 @@ import { NoPointMessage, DateFormat } from "../mock/const";
 import { getRandomInteger, getNullFormat } from "./common-util";
 import { getOffersByType } from "../mock/point";
 
-const humanizePointDate = (date) => dayjs(date).format(DateFormat.DATE) || '';
-const humanizePointDateTime = (date) => dayjs(date).format(DateFormat.DATE_TIME) || '';
-const humanizePointTime = (date) => dayjs(date).format(DateFormat.TIME) || '';
+export const humanizePointDate = (date) => dayjs(date).format(DateFormat.DATE) || '';
+export const humanizePointDateTime = (date) => dayjs(date).format(DateFormat.DATE_TIME) || '';
+export const humanizePointTime = (date) => dayjs(date).format(DateFormat.TIME) || '';
 
-const getUtcDate = (date) => (dayjs(date).utc().format());
+export const getUtcDate = (date) => (dayjs(date).utc().format());
 
-const getRandomDate = () => {
+export const getRandomDate = () => {
   const dateFrom = getUtcDate(dayjs(dayjs().set('d', getRandomInteger(0, 30)).set('M', getRandomInteger(0, 11)).set('h', getRandomInteger(0, 24)).set('m', getRandomInteger(0, 60))));
   const dateTo = getUtcDate(dayjs(dayjs(dateFrom).add(getRandomInteger(0, 3), 'day').add(getRandomInteger(0, 24), 'hour').add(getRandomInteger(0, 60), 'minute')));
   const hourFrom = dayjs(dateFrom).get('hour');
@@ -21,13 +21,13 @@ const getRandomDate = () => {
   return { dateFrom, dateTo, hourFrom, minutesFrom };
 };
 
-const getDurationTime = ({ dateFrom, dateTo }) => {
+export const getDurationTime = ({ dateFrom, dateTo }) => {
   const dateStart = dayjs(dateFrom);
   const dateEnd = dayjs(dateTo);
   return dayjs.duration(dateEnd.diff(dateStart));
 };
 
-const formatDurationTime = ({ dateFrom, dateTo }) => {
+export const formatDurationTime = ({ dateFrom, dateTo }) => {
   const dayDuration = getDurationTime({ dateFrom, dateTo });
   const date = {
     MON: dayDuration.get('month'),
@@ -42,14 +42,14 @@ const formatDurationTime = ({ dateFrom, dateTo }) => {
   return rez.trim();
 };
 
-const getNoPointMessage = (filterType = 'EVERYTHING') => {
+export const getNoPointMessage = (filterType = 'EVERYTHING') => {
   return NoPointMessage[filterType];
 };
 
-const isPastEvent = (dueDate) => dueDate && dayjs().isAfter(dueDate, 'D');
-const isFutureEvent = (dueDate) => dueDate && dayjs().isBefore(dueDate, 'D');
+export const isPastEvent = (dateFrom) => dateFrom && dayjs().isAfter(dateFrom, 'D');
+export const isFutureEvent = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
 
-const getOffersPrice = ({ type, offersSelected }) => {
+export const getOffersPrice = ({ type, offersSelected }) => {
   let offersPrice = 0;
 
   offersSelected?.forEach((offerSelected) => {
@@ -60,5 +60,3 @@ const getOffersPrice = ({ type, offersSelected }) => {
   return ({ offersPrice });
 }
 
-
-export { getOffersPrice, getRandomDate, getUtcDate, humanizePointDate, humanizePointTime, formatDurationTime, humanizePointDateTime, getNoPointMessage, isPastEvent, isFutureEvent };

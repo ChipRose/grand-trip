@@ -108,8 +108,8 @@ const createEventBlock = (pointState) => {
       ${createEventTimeBlock(pointState)}
       ${createEventPriceBlock(pointState)}
       <button class="event__save-btn  btn  btn--blue" ${isSubmitDisabled} type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Cancel</button>
-    </header>
+      <button class="event__reset-btn" type="reset">Delete</button>
+      </header>
   `)
 }
 
@@ -224,15 +224,15 @@ export default class EditPointView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   };
 
-  setResetClickHandler = (callback) => {
-    this._callback.resetClick = callback;
-    this.element.querySelector('form').addEventListener('reset', this.#formResetHandler);
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('form').addEventListener('reset', this.#formDeleteHandler);
   };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.submitClick);
-    this.setResetClickHandler(this._callback.resetClick);
+    this.setDeleteClickHandler(this._callback.resetClick);
   }
 
   #setDatepicker = () => {
@@ -263,9 +263,9 @@ export default class EditPointView extends AbstractStatefulView {
     this._callback.submitClick(EditPointView.parseStateToPoint(this._state));
   }
 
-  #formResetHandler = (evt) => {
+  #formDeleteHandler = (evt) => {
     evt.preventDefault();
-    this._callback.resetClick();
+    this._callback.deleteClick(EditPointView.parseStateToPoint(this._state));
   }
 
   #typeChangeHandler = (evt) => {
