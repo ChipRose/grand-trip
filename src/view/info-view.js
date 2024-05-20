@@ -1,20 +1,27 @@
 import AbstractView from '../framework/view/abstract-view';
-import { getOffersPrice } from '../util/point-util';
+import { getOffersPrice, getDateInterval } from '../util/point-util';
 
 const createInfoTemplate = (points) => {
 
   let totalPrice = 0;
+  const route = [points[0].destination.name];
 
-  points.forEach(({ type, offers, basePrice }) => {
+  points.forEach(({ destination, type, offers, basePrice }, index) => {
+    if (index > 0 && route[index - 1] !== destination.name) {
+      route.push(destination.name);
+    }
+
     totalPrice += (basePrice || 0) + getOffersPrice({ type, offersSelected: offers }).offersPrice;
   })
-  console.log(points);
+
+  const totalRoute = route.join(" &mdash; ");
+
   return (`
     <section class="trip-main__trip-info  trip-info">
       <div class="trip-info__main">
-        <h1 class="trip-info__title">Amsterdam &mdash; Chamonix &mdash; Geneva</h1>
+        <h1 class="trip-info__title">${totalRoute}</h1>
 
-        <p class="trip-info__dates">Mar 18&nbsp;&mdash;&nbsp;20</p>
+        <p class="trip-info__dates">${getDateInterval(points)}</p>
       </div>
 
       <p class="trip-info__cost">

@@ -9,20 +9,25 @@ import PointPresenter from "./point-presenter";
 import { render, remove } from '../framework/render';
 import { generateFilter } from "../mock/filter";
 import { sortDateDown, sortPriceDown, sortTimeDown } from "../util/sorting-util";
-import { SortType, UserAction } from "../mock/const";
+import { SortType, UserAction, UpdateType } from "../mock/const";
 
 export default class BoardPresenter {
   #boardContainer = null;
+  #pointsControlContainer = null;
+
   #sortComponent = null;
   #noPointComponent = null;
-  #pointsControlContainer = null;
+  #infoComponent = null;
+  #newPointButtonComponent = null;
+  #controlEventsComponent = null;
+  #boardComponent = new BoardView();
+  #listComponent = new ListView();
+
   #pointsModel = null;
   #filters = [];
   #currentSortType = SortType.DEFALT;
   #pointPresenter = new Map();
 
-  #boardComponent = new BoardView();
-  #listComponent = new ListView();
 
   constructor({ boardContainer, pointsControlContainer, pointsModel }) {
     this.#boardContainer = boardContainer;
@@ -46,20 +51,20 @@ export default class BoardPresenter {
     return this.#pointsModel.points;
   }
 
-  #renderPointsControlPanel = () => {
-    const infoComponent = new InfoView(this.points);
-    const controlEventsComponent = new ControlEventsView(this.#filters);
-    const newPointButtonComponent = new NewPointButtonView();
+  #renderPointsControlPanel = (points) => {
+    this.#infoComponent = new InfoView(points);
+    this.#controlEventsComponent = new ControlEventsView(this.#filters);
+    this.#newPointButtonComponent = new NewPointButtonView();
 
     const handleNewPointButtonClick = () => {
       console.log('New');
     }
 
-    newPointButtonComponent.setClickHandler(handleNewPointButtonClick)
+    this.#newPointButtonComponent.setClickHandler(handleNewPointButtonClick)
 
-    render(infoComponent, this.#pointsControlContainer);
-    render(controlEventsComponent, this.#pointsControlContainer);
-    render(newPointButtonComponent, this.#pointsControlContainer);
+    render(this.#infoComponent, this.#pointsControlContainer);
+    render(this.#controlEventsComponent, this.#pointsControlContainer);
+    render(this.#newPointButtonComponent, this.#pointsControlContainer);
   }
 
   #renderSort = () => {
@@ -97,6 +102,7 @@ export default class BoardPresenter {
       return;
     }
 
+    this.#renderPointsControlPanel(points);
     this.#renderSort();
     render(this.#listComponent, this.#boardComponent.element);
     this.#renderPoints(points);
@@ -107,23 +113,26 @@ export default class BoardPresenter {
 
     remove(this.#sortComponent);
     remove(this.#noPointComponent);
+    remove(this.#infoComponent);
+    remove(this.#controlEventsComponent);
+    remove(this.#newPointButtonComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFALT;
     }
   }
 
-  #handleModelEvent = ({ updateType, data }) => {
+  #handleModelEvent = (updateType, data ) => {
     console.log({ updateType, data });
     switch (updateType) {
-      case updateType.PATCH:
+      case UpdateType.PATCH:
         this.#pointPresenter.get(data.id).init(data);
         break;
-      case updateType.MINOR:
+      case UpdateType.MINOR:
         this.#clearBoard();
         this.#renderBoard();
         break;
-      case updateType.MAJOR:
+      case UpdateType.MAJOR:
         this.#clearBoard({ resetSortType: true });
         this.#renderBoard();
         break;
@@ -133,13 +142,13 @@ export default class BoardPresenter {
   #handleViewAction = ({ actionType, updateType, update }) => {
     console.log({ actionType, updateType, update });
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
+      case UserAction.UPDATE_POINT:
         this.#pointsModel.updatePoint({ updateType, update });
         break;
-      case UserAction.ADD_TASK:
+      case UserAction.ADD_POINT:
         this.#pointsModel.addPoint({ updateType, update });
         break;
-      case UserAction.DELETE_TASK:
+      case UserAction.DELETE_POINT:
         this.#pointsModel.deletePoint({ updateType, update });
         break;
     }
@@ -160,7 +169,6 @@ export default class BoardPresenter {
   }
 
   init = () => {
-    this.#renderPointsControlPanel();
     this.#renderBoard();
   }
 }

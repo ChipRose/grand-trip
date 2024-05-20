@@ -45,7 +45,7 @@ export default class PointPresenter {
     this.#replacePointToForm();
   }
 
-  #deleteClickHandler = (point) => {
+  #handleDeleteClick = (point) => {
     this.#changeData({
       actionType: UserAction.DELETE_POINT,
       updateType: UpdateType.MINOR,
@@ -63,13 +63,13 @@ export default class PointPresenter {
     });
   }
 
-  #handleFormSubmit = (point) => {
-    const isMinorUpdate = isPastEvent(point.dateFrom) || isFutureEvent(point.dateFrom);
+  #handleFormSubmit = (update) => {
+    const isMinorUpdate = isPastEvent(this.#point.dateFrom) || isFutureEvent(this.#point.dateFrom);
 
     this.#changeData({
       actionType: UserAction.UPDATE_POINT,
       updateType: isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      update: point
+      update
     });
 
     this.#replaceFormToPoint();
@@ -87,7 +87,7 @@ export default class PointPresenter {
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#pointEditComponent.setDeleteClickHandler(this.#deleteClickHandler);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#listContainer);

@@ -60,3 +60,13 @@ export const getOffersPrice = ({ type, offersSelected }) => {
   return ({ offersPrice });
 }
 
+export const getDateInterval = (points) => {
+  const startDate = dayjs(points[0]?.dateFrom);
+  const endDate = dayjs(points[points?.length-1].dateTo);
+
+  if (startDate.get('month') === endDate.get('month') && startDate.get('year') === endDate.get('year')) {
+    return `${humanizePointDate(startDate)}&nbsp;&mdash;&nbsp;${endDate.get('date')}`;
+  }
+  return `${humanizePointDate(startDate)}&nbsp;&mdash;&nbsp;${humanizePointDate(endDate)}`;
+}
+

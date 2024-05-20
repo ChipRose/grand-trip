@@ -226,13 +226,13 @@ export default class EditPointView extends AbstractStatefulView {
 
   setDeleteClickHandler = (callback) => {
     this._callback.deleteClick = callback;
-    this.element.querySelector('form').addEventListener('reset', this.#formDeleteHandler);
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteHandler);
   };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.submitClick);
-    this.setDeleteClickHandler(this._callback.resetClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   #setDatepicker = () => {
