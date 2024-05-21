@@ -115,7 +115,6 @@ export default class BoardPresenter {
     remove(this.#noPointComponent);
     remove(this.#infoComponent);
     remove(this.#controlEventsComponent);
-    remove(this.#newPointButtonComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFALT;

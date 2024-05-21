@@ -49,7 +49,7 @@ export const getNoPointMessage = (filterType = 'EVERYTHING') => {
 export const isPastEvent = (dateFrom) => dateFrom && dayjs().isAfter(dateFrom, 'D');
 export const isFutureEvent = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
 
-export const getOffersPrice = ({ type, offersSelected }) => {
+export const getTotalPrice = ({ type, offersSelected, basePrice }) => {
   let offersPrice = 0;
 
   offersSelected?.forEach((offerSelected) => {
@@ -57,12 +57,12 @@ export const getOffersPrice = ({ type, offersSelected }) => {
     offersPrice += price;
   });
 
-  return ({ offersPrice });
+  return (basePrice + offersPrice);
 }
 
 export const getDateInterval = (points) => {
   const startDate = dayjs(points[0]?.dateFrom);
-  const endDate = dayjs(points[points?.length-1].dateTo);
+  const endDate = dayjs(points[points?.length - 1].dateTo);
 
   if (startDate.get('month') === endDate.get('month') && startDate.get('year') === endDate.get('year')) {
     return `${humanizePointDate(startDate)}&nbsp;&mdash;&nbsp;${endDate.get('date')}`;

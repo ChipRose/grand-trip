@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view';
 import { getPointGeneralInfo } from '../mock/point';
-import { humanizePointDate, humanizePointTime, formatDurationTime, getOffersPrice } from '../util/point-util';
+import { humanizePointDate, humanizePointTime, formatDurationTime, getTotalPrice } from '../util/point-util';
 
 const createOffersListBlock = (pointState) => {
   const { offersAvailable, offers } = pointState;
@@ -32,7 +32,7 @@ const createPointTemplate = (pointState) => {
   const timeEnd = humanizePointTime(dateTo);
   const durationTime = formatDurationTime({ dateFrom, dateTo });
   const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
-  const totalPrice = getOffersPrice({ type, offersSelected: offers }).offersPrice + basePrice;
+  const totalPrice = getTotalPrice({ type, offersSelected: offers, basePrice });
 
   return (`
     <li class="trip-events__item">

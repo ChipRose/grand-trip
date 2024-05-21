@@ -1,6 +1,5 @@
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
-import { isPastEvent, isFutureEvent } from "../util/point-util";
 import { Mode, UpdateType, UserAction } from "../mock/const";
 import { render, replace, remove } from "../framework/render";
 
@@ -45,6 +44,11 @@ export default class PointPresenter {
     this.#replacePointToForm();
   }
 
+  #handleCloseClick = () => {
+    this.#pointEditComponent.reset(this.#point);
+    this.#replaceFormToPoint();
+  }
+
   #handleDeleteClick = (point) => {
     this.#changeData({
       actionType: UserAction.DELETE_POINT,
@@ -64,7 +68,9 @@ export default class PointPresenter {
   }
 
   #handleFormSubmit = (update) => {
-    const isMinorUpdate = isPastEvent(this.#point.dateFrom) || isFutureEvent(this.#point.dateFrom);
+    const destinationChangeFlag = this.#point?.destination?.name !== update?.destination?.name;
+    const datesChangeFlag = this.#point?.dateFrom !== update?.dateFrom || this.#point?.dateTo !== update?.dateTo;
+    const isMinorUpdate = destinationChangeFlag || datesChangeFlag;
 
     this.#changeData({
       actionType: UserAction.UPDATE_POINT,
@@ -86,6 +92,7 @@ export default class PointPresenter {
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#pointEditComponent.setCloseClickHandler(this.#handleCloseClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 

@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view';
-import { getOffersPrice, getDateInterval } from '../util/point-util';
+import { getTotalPrice, getDateInterval } from '../util/point-util';
 
 const createInfoTemplate = (points) => {
 
@@ -11,7 +11,7 @@ const createInfoTemplate = (points) => {
       route.push(destination.name);
     }
 
-    totalPrice += (basePrice || 0) + getOffersPrice({ type, offersSelected: offers }).offersPrice;
+    totalPrice += (basePrice || 0) + getTotalPrice({ type, offersSelected: offers, basePrice });
   })
 
   const totalRoute = route.join(" &mdash; ");

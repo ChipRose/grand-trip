@@ -3,7 +3,7 @@ import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
 import { getPointGeneralInfo, getDestination } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { getUtcDate, getOffersPrice } from '../util/point-util';
+import { getUtcDate, getTotalPrice } from '../util/point-util';
 import flatpickr from 'flatpickr';
 import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -45,7 +45,7 @@ const createEventDestinationList = (pointState) => {
       <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.name || ''}" list="destination-list-1">
       <datalist id="destination-list-1">
         ${destinations?.map(({ name }) => (`
-          <option value=${name}></option>
+          <option value="${name}"></option>
         `)).join('')}
       </datalist>
     </div>
@@ -109,6 +109,9 @@ const createEventBlock = (pointState) => {
       ${createEventPriceBlock(pointState)}
       <button class="event__save-btn  btn  btn--blue" ${isSubmitDisabled} type="submit">Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__rollup-btn" type="button">
+        <span class="visually-hidden">Open event</span>
+      </button>
       </header>
   `)
 }
@@ -189,7 +192,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   static parsePointToState = (point) => ({
     ...point,
-    totalPrice: getOffersPrice({ type: point.type, offersSelected: point.offers }).offersPrice + point.basePrice,
+    totalPrice: getTotalPrice({ type: point.type, offersSelected: point.offers, basePrice: point.basePrice }),
     ...getPointGeneralInfo(point.type),
     isSubmitDisabled: !point.destination || !point.dateFrom || !point.dateTo ? 'disabled' : '',
   })
@@ -219,6 +222,11 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement(EditPointView.parsePointToState(point));
   }
 
+  setCloseClickHandler = (callback)=>{
+    this._callback.closeClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
+  }
+
   setFormSubmitHandler = (callback) => {
     this._callback.submitClick = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
@@ -233,6 +241,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.#setInnerHandlers();
     this.setFormSubmitHandler(this._callback.submitClick);
     this.setDeleteClickHandler(this._callback.deleteClick);
+    this.setCloseClickHandler(this._callback.closeClick);
   }
 
   #setDatepicker = () => {
@@ -263,6 +272,11 @@ export default class EditPointView extends AbstractStatefulView {
     this._callback.submitClick(EditPointView.parseStateToPoint(this._state));
   }
 
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeClick();
+  }
+
   #formDeleteHandler = (evt) => {
     evt.preventDefault();
     this._callback.deleteClick(EditPointView.parseStateToPoint(this._state));
@@ -286,11 +300,13 @@ export default class EditPointView extends AbstractStatefulView {
         destination: null,
         isSubmitDisabled: 'disabled'
       })
+      return
     }
 
-    this.updateElement(
-      getDestination(evt.target.value),
-    );
+    this.updateElement({
+      ...getDestination(evt.target.value),
+      isSubmitDisabled: ''
+    });
   }
 
   #dateChangeHandler = ([dateFrom, dateTo]) => {
@@ -318,7 +334,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       offers: offersRezult,
-      totalPrice: getOffersPrice({ type: this._state.type, offersSelected: offersRezult }).offersPrice + this._state.basePrice,
+      totalPrice: getTotalPrice({ type: this._state.type, offersSelected: offersRezult, basePrice: this._state.basePrice }),
     });
   }
 }
