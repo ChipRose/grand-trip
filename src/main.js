@@ -13,7 +13,7 @@ const boardContainer = siteMainElement.querySelector('.page-body__container');
 
 const pointsModel = new PointsModel();
 const filterModel = new FilterModel();
-const boardPresenter = new BoardPresenter({ boardContainer, pointsControlContainer, pointsModel });
+const boardPresenter = new BoardPresenter({ boardContainer, pointsControlContainer, pointsModel, filterModel });
 const filterPresenter = new FilterPresenter({ filterContainer, filterModel, pointsModel });
 
 boardPresenter.init();

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { getTotalPrice } from './point-util';
 import { SortType } from "../mock/const";
 
 const getWeightForNullDate = (dateA, dateB) => {
@@ -24,7 +25,7 @@ const sortDateDown = (pointA, pointB) => {
 };
 
 const sortPriceDown = (pointA, pointB) => {
-  return pointB.basePrice - pointA.basePrice;
+  return getTotalPrice({ basePrice: pointB.basePrice, offersSelected: pointB.offers, type: pointB.type }) - getTotalPrice({ basePrice: pointA.basePrice, offersSelected: pointA.offers, type: pointA.type });
 };
 
 const sortTimeDown = (pointA, pointB) => {
@@ -34,16 +35,14 @@ const sortTimeDown = (pointA, pointB) => {
 };
 
 
-const sorting = {
-  [SortType.DAY]: (points) => points.sort(sortDateDown),
+const sort = {
+  [SortType.DEFALT]: (points) => points.sort(sortDateDown),
   [SortType.EVENT]: (points) => points,
   [SortType.TIME]: (points) => points.sort(sortTimeDown),
   [SortType.PRICE]: (points) => points.sort(sortPriceDown),
   [SortType.OFFERS]: (points) => points,
-}
+};
 
-const getSorting = (sortType)=>{
-  return sorting[sortType];
-}
-
-export { getSorting, sortDateDown, sortPriceDown, sortTimeDown };
+export const sorting = ({ points, sortType }) => {
+  return sort[sortType](points) || null;
+};

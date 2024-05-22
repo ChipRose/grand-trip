@@ -6,7 +6,8 @@ import NewPointButtonView from "../view/new-point-button-view";
 import InfoView from "../view/info-view";
 import PointPresenter from "./point-presenter";
 import { render, remove } from '../framework/render';
-import { sortDateDown, sortPriceDown, sortTimeDown } from "../util/sorting-util";
+import { filtering } from "../util/filter-util";
+import { sorting } from "../util/sorting-util";
 import { SortType, UserAction, UpdateType, RenderPosition } from "../mock/const";
 
 export default class BoardPresenter {
@@ -21,29 +22,26 @@ export default class BoardPresenter {
   #listComponent = new ListView();
 
   #pointsModel = null;
-  #filters = [];
+  #filterModel = [];
   #currentSortType = SortType.DEFALT;
   #pointPresenter = new Map();
 
-  constructor({ boardContainer, pointsControlContainer, pointsModel }) {
+  constructor({ boardContainer, pointsControlContainer, pointsModel, filterModel }) {
     this.#boardContainer = boardContainer;
     this.#pointsControlContainer = pointsControlContainer;
     this.#pointsModel = pointsModel;
+    this.#filterModel = filterModel;
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
-    switch (this.#currentSortType) {
-      case SortType.DEFALT:
-        return [...this.#pointsModel.points].sort(sortDateDown);
-      case SortType.PRICE:
-        return [...this.#pointsModel.points].sort(sortPriceDown);
-      case SortType.TIME:
-        return [...this.#pointsModel.points].sort(sortTimeDown);
-    }
+    const points = this.#pointsModel.points;
+    const filterType = this.#filterModel.filter;
+    const filteredPoints = filtering({ points, filterType });
 
-    return this.#pointsModel.points;
+    return sorting({ points: filteredPoints, sortType: this.#currentSortType }) || this.#pointsModel.points
   }
 
   #renderControlPanel = () => {

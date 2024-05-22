@@ -1,5 +1,6 @@
 import { render, remove, replace } from '../framework/render';
-import { UpdateType } from "../mock/const";
+import { UpdateType, FilterType } from "../mock/const";
+import { filter } from '../util/filter-util';
 import FilterView from "../view/filter-view";
 
 export default class FilterPresenter {
@@ -21,24 +22,23 @@ export default class FilterPresenter {
   get filters() {
     const points = this.#pointsModel.points;
 
-    return [
+    return ([
       {
         type: 'everything',
         name: 'EVERYTHING',
-        count: points.length,
+        count: filter[FilterType.EVERYTHING](points)?.length || 0,
       },
       {
         type: 'future',
         name: 'FUTURE',
-        count: 1
+        count: filter[FilterType.FUTURE](points)?.length || 0,
       },
       {
         type: 'past',
         name: 'PAST',
-        count: 1
-      },
-
-    ]
+        count: filter[FilterType.PAST](points)?.length || 0,
+      }
+    ]);
   }
 
   #handleModelEvent = () => {
