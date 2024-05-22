@@ -60,7 +60,7 @@ export default class FilterPresenter {
     const filters = this.filters;
     const prevFilterComponent = this.#filterComponent;
 
-    this.#filterComponent = new FilterView({ filters, currentFilter: 'everything' })
+    this.#filterComponent = new FilterView({ filters, currentFilter: this.#filterModel.filter })
 
     this.#filterComponent.setFilterTypeChangeHandler(this.#handleFilterTypeChange);
 

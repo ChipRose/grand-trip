@@ -2,7 +2,7 @@ import { generatePoint } from '../mock/point';
 import Observable from '../framework/observable';
 
 export default class PointsModel extends Observable {
-  #points = Array.from({ length: 10 }, generatePoint);
+  #points = Array.from({ length: 5 }, generatePoint);
 
   get points() {
     return this.#points;

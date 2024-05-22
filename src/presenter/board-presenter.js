@@ -8,7 +8,7 @@ import PointPresenter from "./point-presenter";
 import { render, remove } from '../framework/render';
 import { filtering } from "../util/filter-util";
 import { sorting } from "../util/sorting-util";
-import { SortType, UserAction, UpdateType, RenderPosition } from "../mock/const";
+import { SortType, UserAction, UpdateType, FilterType, RenderPosition } from "../mock/const";
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -24,6 +24,7 @@ export default class BoardPresenter {
   #pointsModel = null;
   #filterModel = [];
   #currentSortType = SortType.DEFALT;
+  #currentFilterType = FilterType.DEFALT;
   #pointPresenter = new Map();
 
   constructor({ boardContainer, pointsControlContainer, pointsModel, filterModel }) {
@@ -38,10 +39,10 @@ export default class BoardPresenter {
 
   get points() {
     const points = this.#pointsModel.points;
-    const filterType = this.#filterModel.filter;
-    const filteredPoints = filtering({ points, filterType });
+    this.#currentFilterType = this.#filterModel.filter;
+    const filteredPoints = filtering({ points, filterType: this.#currentFilterType });
 
-    return sorting({ points: filteredPoints, sortType: this.#currentSortType }) || this.#pointsModel.points
+    return sorting({ points: filteredPoints, sortType: this.#currentSortType }) || this.#pointsModel.points;
   }
 
   #renderControlPanel = () => {
@@ -75,8 +76,8 @@ export default class BoardPresenter {
     })
   }
 
-  #renderEmptyState = (filterType) => {
-    this.#noPointComponent = new NoPointsView(filterType);
+  #renderEmptyState = () => {
+    this.#noPointComponent = new NoPointsView(this.#currentFilterType);
 
     render(this.#noPointComponent, this.#boardComponent.element);
   }
@@ -88,7 +89,7 @@ export default class BoardPresenter {
     render(this.#boardComponent, this.#boardContainer);
 
     if (pointsCount === 0) {
-      this.#renderEmptyState();
+      this.#renderEmptyState(this.#filterModel.filter);
       return;
     }
 
@@ -102,11 +103,14 @@ export default class BoardPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.destroy());
 
     remove(this.#sortComponent);
-    remove(this.#noPointComponent);
     remove(this.#infoComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFALT;
+    }
+
+    if (this.#noPointComponent) {
+      remove(this.#noPointComponent);
     }
   }
 

@@ -20,16 +20,16 @@ export const RenderPosition = {
   AFTEREND: 'afterend',
 };
 
-export const NoPointMessage = {
-  EVERYTHING: 'Click New Event to create your first point',
-  FUTURE: 'There are no past events now',
-  PAST: 'There are no future events now',
-};
-
 export const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past'
+};
+
+export const NoPointMessage = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no past events now',
+  [FilterType.PAST]: 'There are no future events now',
 };
 
 export const SortType = {
