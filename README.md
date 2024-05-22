@@ -1,6 +1,6 @@
 # Проект «Grand Trip»
 
-* Студент: [Yana Rozova).
+* Студент: Yana Rozova.
 
 ---
 
