@@ -11,7 +11,14 @@ export const BLANK_POINT = {
   type: 'taxi',
   offers: [],
   isFavorite: false
-}
+};
+
+export const RenderPosition = {
+  BEFOREBEGIN: 'beforebegin',
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+  AFTEREND: 'afterend',
+};
 
 export const NoPointMessage = {
   EVERYTHING: 'Click New Event to create your first point',

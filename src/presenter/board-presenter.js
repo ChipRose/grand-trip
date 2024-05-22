@@ -2,14 +2,12 @@ import BoardView from "../view/board-view";
 import SortView from "../view/sort-view";
 import ListView from "../view/list-view";
 import NoPointsView from "../view/no-points-view";
-import ControlEventsView from "../view/control-events-view";
 import NewPointButtonView from "../view/new-point-button-view";
 import InfoView from "../view/info-view";
 import PointPresenter from "./point-presenter";
 import { render, remove } from '../framework/render';
-import { generateFilter } from "../mock/filter";
 import { sortDateDown, sortPriceDown, sortTimeDown } from "../util/sorting-util";
-import { SortType, UserAction, UpdateType } from "../mock/const";
+import { SortType, UserAction, UpdateType, RenderPosition } from "../mock/const";
 
 export default class BoardPresenter {
   #boardContainer = null;
@@ -19,7 +17,6 @@ export default class BoardPresenter {
   #noPointComponent = null;
   #infoComponent = null;
   #newPointButtonComponent = null;
-  #controlEventsComponent = null;
   #boardComponent = new BoardView();
   #listComponent = new ListView();
 
@@ -28,12 +25,10 @@ export default class BoardPresenter {
   #currentSortType = SortType.DEFALT;
   #pointPresenter = new Map();
 
-
   constructor({ boardContainer, pointsControlContainer, pointsModel }) {
     this.#boardContainer = boardContainer;
     this.#pointsControlContainer = pointsControlContainer;
     this.#pointsModel = pointsModel;
-    this.#filters = generateFilter(this.#pointsModel.points);
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
   }
@@ -51,20 +46,17 @@ export default class BoardPresenter {
     return this.#pointsModel.points;
   }
 
-  #renderPointsControlPanel = (points) => {
-    this.#infoComponent = new InfoView(points);
-    this.#controlEventsComponent = new ControlEventsView(this.#filters);
-    this.#newPointButtonComponent = new NewPointButtonView();
+  #renderControlPanel = () => {
+    const prevNewButtonComponent = this.#newPointButtonComponent;
 
-    const handleNewPointButtonClick = () => {
-      console.log('New');
+    this.#infoComponent = new InfoView(this.#pointsModel.points);
+    render(this.#infoComponent, this.#pointsControlContainer, RenderPosition.AFTERBEGIN);
+
+    if (prevNewButtonComponent === null) {
+      this.#newPointButtonComponent = new NewPointButtonView();
+      render(this.#newPointButtonComponent, this.#pointsControlContainer);
+      return
     }
-
-    this.#newPointButtonComponent.setClickHandler(handleNewPointButtonClick)
-
-    render(this.#infoComponent, this.#pointsControlContainer);
-    render(this.#controlEventsComponent, this.#pointsControlContainer);
-    render(this.#newPointButtonComponent, this.#pointsControlContainer);
   }
 
   #renderSort = () => {
@@ -102,7 +94,7 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#renderPointsControlPanel(points);
+    this.#renderControlPanel();
     this.#renderSort();
     render(this.#listComponent, this.#boardComponent.element);
     this.#renderPoints(points);
@@ -114,14 +106,13 @@ export default class BoardPresenter {
     remove(this.#sortComponent);
     remove(this.#noPointComponent);
     remove(this.#infoComponent);
-    remove(this.#controlEventsComponent);
 
     if (resetSortType) {
       this.#currentSortType = SortType.DEFALT;
     }
   }
 
-  #handleModelEvent = (updateType, data ) => {
+  #handleModelEvent = (updateType, data) => {
     console.log({ updateType, data });
     switch (updateType) {
       case UpdateType.PATCH:
