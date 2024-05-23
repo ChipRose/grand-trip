@@ -1,12 +1,12 @@
+import flatpickr from 'flatpickr';
+import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
+import 'flatpickr/dist/flatpickr.min.css';
 import { capitalizeText, isItemChecked, isChecked } from '../util/common-util';
+import { getUtcDate, getTotalPrice } from '../util/point-util';
 import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
 import { getPointGeneralInfo, getDestination } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-import { getUtcDate, getTotalPrice } from '../util/point-util';
-import flatpickr from 'flatpickr';
-import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
-import 'flatpickr/dist/flatpickr.min.css';
 
 
 const createEventTypeList = (pointState) => {
@@ -222,7 +222,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement(EditPointView.parsePointToState(point));
   }
 
-  setCloseClickHandler = (callback)=>{
+  setCloseClickHandler = (callback) => {
     this._callback.closeClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#formCloseHandler);
   }
@@ -305,7 +305,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       ...getDestination(evt.target.value),
-      isSubmitDisabled: ''
+      isSubmitDisabled: this._state.dateFrom || this._state.dateTo ? '' : 'disabled'
     });
   }
 
@@ -321,7 +321,8 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       dateFrom: getUtcDate(dateFrom),
-      dateTo: getUtcDate(dateTo)
+      dateTo: getUtcDate(dateTo),
+      isSubmitDisabled: this._state.destination ? 'disabled' : '',
     })
   }
 

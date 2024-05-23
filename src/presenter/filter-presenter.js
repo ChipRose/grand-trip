@@ -1,6 +1,6 @@
 import { render, remove, replace } from '../framework/render';
-import { UpdateType, FilterType } from "../mock/const";
 import { filter } from '../util/filter-util';
+import { UpdateType, FilterType } from "../mock/const";
 import FilterView from "../view/filter-view";
 
 export default class FilterPresenter {
