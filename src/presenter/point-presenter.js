@@ -2,6 +2,7 @@ import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
 import { Mode, UpdateType, UserAction } from "../mock/const";
 import { render, replace, remove } from "../framework/render";
+import { getTotalPrice } from "../util/point-util";
 
 export default class PointPresenter {
   #pointComponent = null;
@@ -70,7 +71,8 @@ export default class PointPresenter {
   #handleFormSubmit = (update) => {
     const destinationChangeFlag = this.#point?.destination?.name !== update?.destination?.name;
     const datesChangeFlag = this.#point?.dateFrom !== update?.dateFrom || this.#point?.dateTo !== update?.dateTo;
-    const isMinorUpdate = destinationChangeFlag || datesChangeFlag;
+    const priceChangingFlag = getTotalPrice({ type: this.#point?.type, offersSelected: this.#point?.offers, basePrice: this.#point?.basePrice }) !== getTotalPrice({ type: update.type, offersSelected: update.offers, basePrice: update.basePrice })
+    const isMinorUpdate = destinationChangeFlag || datesChangeFlag || priceChangingFlag;
 
     this.#changeData({
       actionType: UserAction.UPDATE_POINT,

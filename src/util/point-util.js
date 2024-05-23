@@ -30,15 +30,22 @@ export const getDurationTime = ({ dateFrom, dateTo }) => {
 export const formatDurationTime = ({ dateFrom, dateTo }) => {
   const dayDuration = getDurationTime({ dateFrom, dateTo });
   const date = {
-    MON: dayDuration.get('month'),
-    D: dayDuration.get('days'),
-    H: dayDuration.get('hour'),
-    M: dayDuration.get('minute'),
+    MON: dayDuration.get('month') || '00',
+    D: dayDuration.get('days') || '00',
+    H: dayDuration.get('hour') || '00',
+    M: dayDuration.get('minute') || '00',
   };
   let rez = '';
-  Object.entries(date).forEach(([key, value]) => {
-    if (value) rez += getNullFormat(value) + key + ' '
-  })
+  for (const [key, value] of Object.entries(date)) {
+    if (value !== '00') {
+      const tempDate = Object.entries(date);
+      const index = tempDate.findIndex(([keyTemp,]) => keyTemp === key);
+
+      tempDate.slice(index).forEach(([key, value]) => (rez += getNullFormat(value) + key + " "));
+      return rez;
+    }
+  }
+
   return rez.trim();
 };
 

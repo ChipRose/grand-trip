@@ -1,6 +1,7 @@
+import he from 'he'
 import AbstractView from '../framework/view/abstract-view';
 import { getPointGeneralInfo } from '../mock/point';
-import { humanizePointDate, humanizePointTime, formatDurationTime, getTotalPrice } from '../util/point-util';
+import { humanizePointDate, humanizePointTime, formatDurationTime } from '../util/point-util';
 
 const createOffersListBlock = (pointState) => {
   const { offersAvailable, offers } = pointState;
@@ -24,15 +25,15 @@ const createOffersListBlock = (pointState) => {
 }
 
 const createPointTemplate = (pointState) => {
-  const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite, offers } = pointState;
+  const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite } = pointState;
   const { name = '' } = destination;
 
-  const pointTitle = `${type} ${name}`;
+  const pointTitle = he.encode(`${type} ${name}`);
+  const pointBasePrice = he.encode(`${basePrice}`);
   const timeStart = humanizePointTime(dateFrom);
   const timeEnd = humanizePointTime(dateTo);
   const durationTime = formatDurationTime({ dateFrom, dateTo });
   const favoriteClass = isFavorite ? 'event__favorite-btn--active' : '';
-  const totalPrice = getTotalPrice({ type, offersSelected: offers, basePrice });
 
   return (`
     <li class="trip-events__item">
@@ -51,7 +52,7 @@ const createPointTemplate = (pointState) => {
           <p class="event__duration">${durationTime}</p>
         </div>
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${totalPrice}</span>
+          &euro;&nbsp;<span class="event__price-value">${pointBasePrice}</span>
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         ${createOffersListBlock(pointState)}

@@ -11,7 +11,7 @@ const createInfoTemplate = (points) => {
       route.push(destination.name);
     }
 
-    totalPrice += (basePrice || 0) + getTotalPrice({ type, offersSelected: offers, basePrice });
+    totalPrice += getTotalPrice({ type, offersSelected: offers, basePrice });
   })
 
   const totalRoute = route.join(" &mdash; ");

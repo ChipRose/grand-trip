@@ -47,6 +47,8 @@ export default class PointNewPresenter {
     this.#pointEditComponent = new EditPointView();
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
+    this.#pointEditComponent.setCloseClickHandler(this.#handleDeleteClick);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
 
     render(this.#pointEditComponent, this.#listComponent, RenderPosition.AFTERBEGIN);
   }

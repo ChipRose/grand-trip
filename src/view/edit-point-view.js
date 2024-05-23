@@ -1,13 +1,13 @@
 import flatpickr from 'flatpickr';
 import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 import { capitalizeText, isItemChecked, isChecked } from '../util/common-util';
-import { getUtcDate, getTotalPrice } from '../util/point-util';
+import { getUtcDate } from '../util/point-util';
 import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
 import { getPointGeneralInfo, getDestination } from "../mock/point";
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
-
 
 const createEventTypeList = (pointState) => {
   const { type, types } = pointState;
@@ -45,7 +45,7 @@ const createEventDestinationList = (pointState) => {
       <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.name || ''}" list="destination-list-1">
       <datalist id="destination-list-1">
         ${destinations?.map(({ name }) => (`
-          <option value="${name}"></option>
+          <option value="${he.encode(name)}"></option>
         `)).join('')}
       </datalist>
     </div>
@@ -70,14 +70,14 @@ const createEventTimeBlock = (pointState) => {
 }
 
 const createEventPriceBlock = (pointState) => {
-  const { totalPrice } = pointState;
+  const { basePrice } = pointState;
   return (`
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price">
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price" type="text" name="event-price" value=${totalPrice}>
+      <input class="event__input  event__input--price" id="event-price" type="text" name="event-price" value=${basePrice}>
     </div>
   `)
 }
@@ -192,7 +192,6 @@ export default class EditPointView extends AbstractStatefulView {
 
   static parsePointToState = (point) => ({
     ...point,
-    totalPrice: getTotalPrice({ type: point.type, offersSelected: point.offers, basePrice: point.basePrice }),
     ...getPointGeneralInfo(point.type),
     isSubmitDisabled: !point.destination || !point.dateFrom || !point.dateTo ? 'disabled' : '',
   })
@@ -203,7 +202,6 @@ export default class EditPointView extends AbstractStatefulView {
     delete point.offersAvailable;
     delete point.destinations;
     delete point.types;
-    delete point.totalPrice;
     delete point.isSubmitDisabled;
 
     return point;
@@ -261,6 +259,8 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #setInnerHandlers = () => {
+    this.element.querySelector('.event__field-group--price')?.addEventListener('keydown', this.#basePriceInputNotNumberHandler);
+    this.element.querySelector('.event__field-group--price')?.addEventListener('input', this.#basePriceChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
     this.element.querySelector('.event__field-group--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
@@ -305,7 +305,7 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       ...getDestination(evt.target.value),
-      isSubmitDisabled: this._state.dateFrom || this._state.dateTo ? '' : 'disabled'
+      isSubmitDisabled: this._state.dateFrom && this._state.dateTo ? '' : 'disabled'
     });
   }
 
@@ -322,7 +322,7 @@ export default class EditPointView extends AbstractStatefulView {
     this.updateElement({
       dateFrom: getUtcDate(dateFrom),
       dateTo: getUtcDate(dateTo),
-      isSubmitDisabled: this._state.destination ? 'disabled' : '',
+      isSubmitDisabled: this._state.destination ? '' : 'disabled',
     })
   }
 
@@ -335,7 +335,18 @@ export default class EditPointView extends AbstractStatefulView {
 
     this.updateElement({
       offers: offersRezult,
-      totalPrice: getTotalPrice({ type: this._state.type, offersSelected: offersRezult, basePrice: this._state.basePrice }),
+    });
+  }
+
+  #basePriceInputNotNumberHandler = (evt) => {
+    if (isNaN(evt.key) && evt.key !== 'Backspace') {
+      evt.preventDefault();
+    }
+  }
+
+  #basePriceChangeHandler = (evt) => {
+    this.updateElement({
+      basePrice: Number(evt.target.value),
     });
   }
 }
