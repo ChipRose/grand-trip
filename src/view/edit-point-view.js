@@ -262,7 +262,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__field-group--price')?.addEventListener('keydown', this.#basePriceInputNotNumberHandler);
-    this.element.querySelector('.event__field-group--price')?.addEventListener('input', this.#basePriceChangeHandler);
+    this.element.querySelector('.event__field-group--price')?.addEventListener('change', this.#basePriceChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offersChangeHandler);
     this.element.querySelector('.event__field-group--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
