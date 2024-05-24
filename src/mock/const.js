@@ -64,5 +64,17 @@ export const UserAction = {
 export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
-  MAJOR: 'MAJOR'
+  MAJOR: 'MAJOR',
+  INIT: 'INIT'
+};
+
+export const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  DELETE: 'DELETE'
+};
+
+export const ApiInfo = {
+  AUTHORIZATION: 'Basic vhgiufggvksfvjyfwe72ryiowe',
+  END_POINT: 'https://17.ecmascript.htmlacademy.pro/big-trip',
 };

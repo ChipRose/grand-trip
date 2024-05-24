@@ -7,25 +7,27 @@ import SortView from "../view/sort-view";
 import ListView from "../view/list-view";
 import NoPointsView from "../view/no-points-view";
 import InfoView from "../view/info-view";
+import LoadingView from '../view/loading-view';
 import PointPresenter from "./point-presenter";
 import PointNewPresenter from "./point-new-presenter";
 
 export default class BoardPresenter {
   #boardContainer = null;
   #pointsControlContainer = null;
-  #listContainer=null;
 
   #sortComponent = null;
   #noPointComponent = null;
   #infoComponent = null;
   #boardComponent = new BoardView();
   #listComponent = new ListView();
+  #loadingComponent = new LoadingView();
 
   #pointsModel = null;
   #filterModel = [];
 
   #currentSortType = SortType.DEFALT;
   #currentFilterType = FilterType.DEFALT;
+  #isLoading = true;
 
   #pointPresenter = new Map();
   #pointNewPresenter = null;
@@ -78,11 +80,20 @@ export default class BoardPresenter {
     render(this.#noPointComponent, this.#boardComponent.element);
   }
 
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#boardComponent.element);
+  }
+
   #renderBoard = () => {
     const points = this.points;
     const pointsCount = points?.length;
 
     render(this.#boardComponent, this.#boardContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
 
     if (pointsCount === 0) {
       this.#renderEmptyState(this.#filterModel.filter);
@@ -102,6 +113,7 @@ export default class BoardPresenter {
     this.#pointPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
     remove(this.#infoComponent);
 
     if (resetSortType) {
@@ -125,6 +137,11 @@ export default class BoardPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({ resetSortType: true });
+        this.#renderBoard();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderBoard();
         break;
     }

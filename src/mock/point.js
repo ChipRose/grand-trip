@@ -1,7 +1,3 @@
-import { nanoid } from 'nanoid';
-import { getRandPartArray, getRandItemArray, getRandomInteger } from '../util/common-util';
-import { getRandomDate } from '../util/point-util';
-
 const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
 const destinations = [
@@ -1040,10 +1036,6 @@ const offersByType = [
 
 export const getOffersByType = (offerType) => (offersByType.find(({ type }) => type === offerType).offers);
 
-const getItemsById = ({ array = [], itemsId = [] }) => {
-  return itemsId?.map((curId) => array?.find((item) => String(item.id) === String(curId)))
-}
-
 export const getPointGeneralInfo = (type) => {
   return ({
     types,
@@ -1063,23 +1055,4 @@ export const getDestination = (name) => {
   return ({
     destination
   });
-}
-
-
-export const generatePoint = () => {
-  const date = getRandomDate();
-  const type = getRandItemArray(types);
-  const offersAvailable = getOffersByType(type);
-  const offersSelected = getRandPartArray(offersAvailable.map(({ id }) => id.toString()));
-
-  return ({
-    id: nanoid(),
-    basePrice: getRandomInteger(200, 1000),
-    dateFrom: date.dateFrom,
-    dateTo: date.dateTo,
-    destination: destinations[getRandomInteger(0, destinations.length-1)],
-    type,
-    offers: offersSelected,
-    isFavorite: Boolean(getRandomInteger()),
-  })
 }
