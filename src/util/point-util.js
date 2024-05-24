@@ -51,7 +51,7 @@ export const getTotalPrice = ({ type, offersSelected, basePrice }) => {
   let offersPrice = 0;
 
   offersSelected?.forEach((offerSelected) => {
-    const price = getOffersByType(type).find(({ id }) => id.toString() === offerSelected)?.price || 0;
+    const price = getOffersByType(type).find(({ id }) => id === offerSelected)?.price || 0;
     offersPrice += price;
   });
 

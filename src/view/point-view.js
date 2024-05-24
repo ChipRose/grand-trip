@@ -5,7 +5,7 @@ import { humanizePointDate, humanizePointTime, formatDurationTime } from '../uti
 
 const createOffersListBlock = (pointState) => {
   const { offersAvailable, offers } = pointState;
-  const checkedOffers = offersAvailable?.filter((offer) => offers.includes(offer.id.toString()));
+  const checkedOffers = offersAvailable?.filter((offer) => offers.includes(offer.id));
 
   if (!offers.length) {
     return ('')

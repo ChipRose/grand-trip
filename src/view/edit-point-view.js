@@ -2,7 +2,7 @@ import flatpickr from 'flatpickr';
 import rangePlugin from 'flatpickr/dist/plugins/rangePlugin';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
-import { capitalizeText, isItemChecked, isChecked } from '../util/common-util';
+import { capitalizeText } from '../util/common-util';
 import { getUtcDate } from '../util/point-util';
 import { humanizePointDateTime } from '../util/point-util';
 import { BLANK_POINT } from '../mock/const';
@@ -11,6 +11,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 const createEventTypeList = (pointState) => {
   const { type, types } = pointState;
+  const isTypeChecked = (currentType) => (type === currentType ? 'checked' : '');
 
   return (`
     <div class="event__type-wrapper">
@@ -22,10 +23,10 @@ const createEventTypeList = (pointState) => {
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Event type</legend>
-          ${types?.map((item, index) => (`
+          ${types?.map((typeItem, index) => (`
             <div class="event__type-item">
-              <input id="event-type-${item}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${item} ${isItemChecked({ array: [item], curValue: type })}>
-              <label class="event__type-label  event__type-label--${item}" for="event-type-${item}-${index}">${capitalizeText(item)}</label>
+              <input id="event-type-${typeItem}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${typeItem} ${isTypeChecked(typeItem)}>
+              <label class="event__type-label  event__type-label--${typeItem}" for="event-type-${typeItem}-${index}">${capitalizeText(typeItem)}</label>
             </div>
           `)).join('')}
         </fieldset>
@@ -118,6 +119,7 @@ const createEventBlock = (pointState) => {
 
 const createOffersBlock = (point) => {
   const { offers, offersAvailable } = point;
+  const isOfferChecked = ({ currentId, offers }) => (offers.includes(Number(currentId)) ? 'checked' : '');
 
   if (!offersAvailable?.length) {
     return ('');
@@ -129,7 +131,7 @@ const createOffersBlock = (point) => {
       <div class="event__available-offers">
         ${offersAvailable.map(({ id, title, price }) => (`
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" value="${id}" ${isChecked({ array: offers, curId: id })}>
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" value="${id}" ${isOfferChecked({ currentId: id, offers })}>
           <label class="event__offer-label" for="event-offer-${id}">
             <span class="event__offer-title">${title}</span>
             &plus;&euro;&nbsp;
@@ -329,7 +331,7 @@ export default class EditPointView extends AbstractStatefulView {
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
 
-    const offerId = evt.target.value;
+    const offerId = Number(evt.target.value);
     const offersTemp = [...this._state.offers];
     const offersRezult = offersTemp?.includes(offerId) ? offersTemp.filter((offer) => offer !== offerId) : [...offersTemp, offerId];
 
