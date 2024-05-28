@@ -347,7 +347,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #basePriceChangeHandler = (evt) => {
-    this.updateElement({
+    this._setState({
       basePrice: Number(evt.target.value),
     });
   }
