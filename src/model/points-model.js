@@ -4,7 +4,6 @@ import { UpdateType } from '../mock/const';
 export default class PointsModel extends Observable {
   #pointsApiService = null;
   #points = [];
-  // #points = Array.from({ length: 2 }, generatePoint);
 
   constructor(pointsApiService) {
     super();
@@ -56,18 +55,20 @@ export default class PointsModel extends Observable {
   }
 
   addPoint = async ({ updateType, update }) => {
+    console.log({ updateType, update });
     try {
-      const response = this.#pointsApiService.addPoint(update);
-      const newPoint = this.#adaptToClient(response)
+      const response = await this.#pointsApiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+
       this.#points = [
         newPoint,
         ...this.#points
       ];
-      this._notify(updateType, update);
-    } catch (err) {
-      throw new Error('Can\'t add point');
-    }
 
+      this._notify(updateType, newPoint);
+    } catch (err) {
+      throw new Error('Can\'t add point', err);
+    }
   }
 
   deletePoint = async ({ updateType, update }) => {
@@ -85,9 +86,9 @@ export default class PointsModel extends Observable {
         ...this.#points.slice(index + 1)
       ];
 
-      this._notify(updateType, update);
+      this._notify(updateType);
     } catch (err) {
-      throw new Error('Can\'t delete point');
+      throw new Error('Can\'t delete point', err);
     }
   }
 

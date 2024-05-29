@@ -313,7 +313,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #dateChangeHandler = ([dateFrom, dateTo]) => {
     if (!dateFrom || !dateTo) {
-      this.updateElement({
+      this._setState({
         isSubmitDisabled: 'disabled',
         dateFrom: null,
         dateTo: null

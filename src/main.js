@@ -29,7 +29,6 @@ const handleNewPointButtonClick = () => {
   newPointButtonComponent.element.disabled = true;
 }
 
-
 boardPresenter.init();
 filterPresenter.init();
 pointsModel.init()

@@ -148,7 +148,6 @@ export default class BoardPresenter {
   }
 
   #handleViewAction = ({ actionType, updateType, update }) => {
-    console.log({ actionType, updateType, update });
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointsModel.updatePoint({ updateType, update });

@@ -1,8 +1,8 @@
 import { Method } from "../mock/const";
 import ApiService from '../framework/api-service';
 
-export default class PointsApiService extends ApiService {
-  get points() {
+export default class DestinationsApiService extends ApiService {
+  get destinations() {
     return this._load({ url: 'points' })
       .then(ApiService.parseResponse)
   }
@@ -37,7 +37,7 @@ export default class PointsApiService extends ApiService {
     return parsedResponse;
   };
 
-  addPoint = async (point) => {
+  addTask = async (point) => {
     const response = await this._load({
       url: 'points',
       method: Method.POST,

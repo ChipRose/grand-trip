@@ -28,9 +28,7 @@ export default class PointNewPresenter {
     this.#changeData({
       actionType: UserAction.ADD_POINT,
       updateType: UpdateType.MINOR,
-      update: {
-        ...point
-      }
+      update: point
     });
     this.destroy();
   }
