@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { getTotalPrice } from './point-util';
 import { SortType } from "../mock/const";
 
 const getWeightForNullDate = (dateA, dateB) => {

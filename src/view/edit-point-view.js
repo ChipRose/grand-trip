@@ -10,7 +10,7 @@ import { getDestination, getAvailableOffers } from '../util/point-util';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 const createEventTypeList = (pointState) => {
-  const { type, types } = pointState;
+  const { type, types, isDisabled } = pointState;
   const isTypeChecked = (currentType) => (type === currentType ? 'checked' : '');
 
   return (`
@@ -25,7 +25,7 @@ const createEventTypeList = (pointState) => {
           <legend class="visually-hidden">Event type</legend>
           ${types?.map((typeItem, index) => (`
             <div class="event__type-item">
-              <input id="event-type-${typeItem}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${typeItem} ${isTypeChecked(typeItem)}>
+              <input id="event-type-${typeItem}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${typeItem} ${isTypeChecked(typeItem)}  ${isDisabled ? 'disabled' : ''}>
               <label class="event__type-label  event__type-label--${typeItem}" for="event-type-${typeItem}-${index}">${capitalizeText(typeItem)}</label>
             </div>
           `)).join('')}
@@ -36,14 +36,14 @@ const createEventTypeList = (pointState) => {
 }
 
 const createEventDestinationList = (pointState) => {
-  const { type, destinations, destination } = pointState;
+  const { type, destinations, destination, isDisabled } = pointState;
 
   return (`
     <div class="event__field-group  event__field-group--destination">
       <label class="event__label  event__type-output" for="event-destination">
       ${capitalizeText(type)}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.name || ''}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination" type="text" name="event-destination" value="${destination?.name || ''}" list="destination-list-1"  ${isDisabled ? 'disabled' : ''}>
       <datalist id="destination-list-1">
         ${destinations?.map(({ name }) => (`
           <option value="${he.encode(name)}"></option>
@@ -54,7 +54,7 @@ const createEventDestinationList = (pointState) => {
 }
 
 const createEventTimeBlock = (pointState) => {
-  const { dateFrom, dateTo } = pointState;
+  const { dateFrom, dateTo, isDisabled } = pointState;
 
   const timeStart = humanizePointDateTime(dateFrom);
   const timeEnd = humanizePointDateTime(dateTo);
@@ -62,16 +62,16 @@ const createEventTimeBlock = (pointState) => {
   return (`
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time">From</label>
-      <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value=${timeStart}>
+      <input class="event__input  event__input--time" id="event-start-time" type="text" name="event-start-time" value=${timeStart}  ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time">To</label>
-      <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value=${timeEnd}>
+      <input class="event__input  event__input--time" id="event-end-time" type="text" name="event-end-time" value=${timeEnd}  ${isDisabled ? 'disabled' : ''}>
     </div>
   `)
 }
 
 const createEventPriceBlock = (pointState) => {
-  const { basePrice } = pointState;
+  const { basePrice, isDisabled } = pointState;
 
   return (`
     <div class="event__field-group  event__field-group--price">
@@ -79,7 +79,7 @@ const createEventPriceBlock = (pointState) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price" type="text" name="event-price" value=${basePrice}>
+      <input class="event__input  event__input--price" id="event-price" type="text" name="event-price" value=${basePrice}  ${isDisabled ? 'disabled' : ''}>
     </div>
   `)
 }
@@ -101,7 +101,7 @@ const createGalleryList = (pictures) => {
 }
 
 const createEventBlock = (pointState) => {
-  const { isSubmitDisabled } = pointState;
+  const { isSubmitDisabled, isSaving, isDeleting, isDisabled } = pointState;
 
   return (`
     <header class="event__header">
@@ -109,8 +109,8 @@ const createEventBlock = (pointState) => {
       ${createEventDestinationList(pointState)}
       ${createEventTimeBlock(pointState)}
       ${createEventPriceBlock(pointState)}
-      <button class="event__save-btn  btn  btn--blue" ${isSubmitDisabled} type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
+      <button class="event__save-btn  btn  btn--blue" ${isSubmitDisabled || isDisabled ? 'disabled' : ''} type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
+      <button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
@@ -200,7 +200,10 @@ export default class EditPointView extends AbstractStatefulView {
     types,
     offersAvailable: getAvailableOffers({ offerType: point.type, offersByType: this.#generalInfo?.offersByType }),
     destinations: this.#generalInfo?.destinations,
-    isSubmitDisabled: !point.destination || !point.dateFrom || !point.dateTo ? 'disabled' : '',
+    isSubmitDisabled: !point.destination || !point.dateFrom || !point.dateTo,
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   })
 
   #parseStateToPoint = (state) => {
@@ -210,6 +213,9 @@ export default class EditPointView extends AbstractStatefulView {
     delete point.destinations;
     delete point.types;
     delete point.isSubmitDisabled;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return point;
   }
@@ -307,31 +313,31 @@ export default class EditPointView extends AbstractStatefulView {
     if (evt.target.value === '' || !destination) {
       this.updateElement({
         destination: null,
-        isSubmitDisabled: 'disabled'
+        isSubmitDisabled: true
       })
       return
     }
 
     this.updateElement({
       ...destination,
-      isSubmitDisabled: this._state.dateFrom && this._state.dateTo ? '' : 'disabled'
+      isSubmitDisabled: !this._state.dateFrom && !this._state.dateTo
     });
   }
 
   #dateChangeHandler = ([dateFrom, dateTo]) => {
     if (!dateFrom || !dateTo) {
-      this._setState({
-        isSubmitDisabled: 'disabled',
+      this.updateElement({
+        isSubmitDisabled: true,
         dateFrom: null,
         dateTo: null
       })
       return
     }
 
-    this._setState({
+    this.updateElement({
       dateFrom: getUtcDate(dateFrom),
       dateTo: getUtcDate(dateTo),
-      isSubmitDisabled: this._state.destination ? '' : 'disabled',
+      isSubmitDisabled: !this._state.destination,
     })
   }
 

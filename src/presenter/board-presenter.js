@@ -107,7 +107,7 @@ export default class BoardPresenter {
     this.#renderInfoPanel();
     this.#renderSort();
     render(this.#listComponent, this.#boardComponent.element);
-    this.#pointNewPresenter = new PointNewPresenter({ listComponent: this.#listComponent.element, changeData: this.#handleViewAction })
+    this.#pointNewPresenter = new PointNewPresenter({ listComponent: this.#listComponent.element, changeData: this.#handleViewAction, generalInfo: this.#generalInfoModel.generalInfo })
     this.#renderPoints(points);
   }
 
@@ -151,15 +151,22 @@ export default class BoardPresenter {
     }
   }
 
-  #handleViewAction = ({ actionType, updateType, update }) => {
+  #handleViewAction = async ({ actionType, updateType, update }) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint({ updateType, update });
+        this.#pointPresenter.get(update.id).setSaving();
+        try {
+          this.#pointsModel.updatePoint({ updateType, update });
+        } catch {
+          this.#pointPresenter.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_POINT:
+        this.#pointNewPresenter.get(update.id).setSaving();
         this.#pointsModel.addPoint({ updateType, update });
         break;
       case UserAction.DELETE_POINT:
+        this.#pointPresenter.get(update.id).setDeleting();
         this.#pointsModel.deletePoint({ updateType, update });
         break;
     }

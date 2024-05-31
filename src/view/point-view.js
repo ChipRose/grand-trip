@@ -6,13 +6,13 @@ const createOffersListBlock = (pointState) => {
   const { offersAvailable, offers } = pointState;
   const checkedOffers = offersAvailable?.filter((offer) => offers.includes(offer.id));
 
-  if (!offers.length) {
+  if (!offers?.length) {
     return ('')
   }
 
   return (`
     <ul class="event__selected-offers">
-      ${checkedOffers.map(({ title, price }) => (
+      ${checkedOffers?.map(({ title, price }) => (
     `<li class="event__offer">
         <span class="event__offer-title">${title}</span>
         &plus;&euro;&nbsp;
@@ -24,7 +24,7 @@ const createOffersListBlock = (pointState) => {
 }
 
 const createPointTemplate = (pointState) => {
-  const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite } = pointState;
+  const { basePrice, dateFrom, dateTo, type = 'taxi', destination = {}, isFavorite, isDisabled } = pointState;
   const { name = '' } = destination;
 
   const pointTitle = he.encode(`${type} ${name}`);
@@ -55,7 +55,7 @@ const createPointTemplate = (pointState) => {
         </p>
         <h4 class="visually-hidden">Offers:</h4>
         ${createOffersListBlock(pointState)}
-        <button class="event__favorite-btn ${favoriteClass}" type="button">
+        <button class="event__favorite-btn ${favoriteClass}" type="button" ${isDisabled ? 'disabled' : ''}>
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
