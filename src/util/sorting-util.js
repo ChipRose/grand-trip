@@ -25,7 +25,7 @@ const sortDateDown = (pointA, pointB) => {
 };
 
 const sortPriceDown = (pointA, pointB) => {
-  return getTotalPrice({ basePrice: pointB.basePrice, offersSelected: pointB.offers, type: pointB.type }) - getTotalPrice({ basePrice: pointA.basePrice, offersSelected: pointA.offers, type: pointA.type });
+  return pointB.basePrice - pointA.basePrice;
 };
 
 const sortTimeDown = (pointA, pointB) => {

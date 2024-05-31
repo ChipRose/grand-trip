@@ -1,7 +1,6 @@
 import he from 'he'
 import AbstractView from '../framework/view/abstract-view';
-import { getPointGeneralInfo } from '../mock/point';
-import { humanizePointDate, humanizePointTime, formatDurationTime } from '../util/point-util';
+import { humanizePointDate, humanizePointTime, formatDurationTime, getAvailableOffers } from '../util/point-util';
 
 const createOffersListBlock = (pointState) => {
   const { offersAvailable, offers } = pointState;
@@ -72,14 +71,17 @@ const createPointTemplate = (pointState) => {
 
 export default class PointView extends AbstractView {
   #point = null;
+  #generalInfo = null;
 
-  constructor(point) {
+  constructor({ point, generalInfo }) {
     super();
+
     this.#point = point;
+    this.#generalInfo = generalInfo;
   }
 
   get template() {
-    return createPointTemplate({ ...this.#point, ...getPointGeneralInfo(this.#point.type) });
+    return createPointTemplate({ ...this.#point, offersAvailable: getAvailableOffers({ offerType: this.#point.type, offersByType: this.#generalInfo?.offersByType }) });
   }
 
   setOpenClickHandler = (callback) => {

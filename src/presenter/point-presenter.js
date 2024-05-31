@@ -7,16 +7,21 @@ import { getTotalPrice } from "../util/point-util";
 export default class PointPresenter {
   #pointComponent = null;
   #pointEditComponent = null;
+
   #listContainer = null;
+
   #changeData = null;
   #changeMode = null;
   #point = null;
+  #generalInfo = null;
+
   #mode = Mode.DEFAULT;
 
-  constructor({ listContainer, changeData, changeMode }) {
+  constructor({ listContainer, changeData, changeMode, generalInfo }) {
     this.#listContainer = listContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
+    this.#generalInfo = generalInfo;
   }
 
   #replacePointToForm = () => {
@@ -71,7 +76,7 @@ export default class PointPresenter {
   #handleFormSubmit = (update) => {
     const destinationChangeFlag = this.#point?.destination?.name !== update?.destination?.name;
     const datesChangeFlag = this.#point?.dateFrom !== update?.dateFrom || this.#point?.dateTo !== update?.dateTo;
-    const priceChangingFlag = getTotalPrice({ type: this.#point?.type, offersSelected: this.#point?.offers, basePrice: this.#point?.basePrice }) !== getTotalPrice({ type: update.type, offersSelected: update.offers, basePrice: update.basePrice })
+    const priceChangingFlag = getTotalPrice({ point: this.#point, offersByType: this.#generalInfo?.offers });
     const isMinorUpdate = destinationChangeFlag || datesChangeFlag || priceChangingFlag;
 
     this.#changeData({
@@ -85,12 +90,11 @@ export default class PointPresenter {
 
   init = (point) => {
     this.#point = point;
-
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
-    this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new EditPointView(point);
+    this.#pointComponent = new PointView({point, generalInfo: this.#generalInfo });
+    this.#pointEditComponent = new EditPointView({ point, generalInfo: this.#generalInfo });
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);

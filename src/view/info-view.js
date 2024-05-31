@@ -1,17 +1,18 @@
 import AbstractView from '../framework/view/abstract-view';
 import { getTotalPrice, getDateInterval } from '../util/point-util';
 
-const createInfoTemplate = (points) => {
-
+const createInfoTemplate = ({points, offersByType}) => {
   let totalPrice = 0;
   const route = [points[0].destination.name];
 
-  points.forEach(({ destination, type, offers, basePrice }, index) => {
+  points.forEach((point, index) => {
+    const { destination } = point;
+
     if (index > 0 && route[index - 1] !== destination.name) {
       route.push(destination.name);
     }
 
-    totalPrice += getTotalPrice({ type, offersSelected: offers, basePrice });
+    totalPrice += getTotalPrice({ point, offersByType });
   })
 
   const totalRoute = route.join(" &mdash; ");
@@ -33,13 +34,15 @@ const createInfoTemplate = (points) => {
 
 export default class InfoView extends AbstractView {
   #points = [];
+  #generalInfo = null;
 
-  constructor(points) {
+  constructor({ points, generalInfo }) {
     super();
     this.#points = points;
+    this.#generalInfo = generalInfo;
   }
 
   get template() {
-    return createInfoTemplate(this.#points);
+    return createInfoTemplate({points: this.#points, offersByType: this.#generalInfo?.offersByType});
   }
 }

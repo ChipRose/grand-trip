@@ -4,7 +4,6 @@ import utc from 'dayjs/plugin/utc';
 dayjs.extend(duration).extend(utc);
 import { NoPointMessage, DateFormat } from "../mock/const";
 import { getNullFormat } from "./common-util";
-import { getOffersByType } from "../mock/point";
 
 export const humanizePointDate = (date) => dayjs(date).format(DateFormat.DATE) || '';
 export const humanizePointDateTime = (date) => dayjs(date).format(DateFormat.DATE_TIME) || '';
@@ -45,13 +44,15 @@ export const getNoPointMessage = (filterType = 'EVERYTHING') => {
 };
 
 export const isPastEvent = (dateFrom) => dateFrom && dayjs().isAfter(dateFrom, 'D');
-export const isFutureEvent = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
+export const isFutureEvent = ({ dateFrom, dateTo }) => dateFrom && dateTo && (dayjs().isBefore(dateFrom, 'D') || dayjs().isBefore(dateTo, 'D'));
 
-export const getTotalPrice = ({ type, offersSelected, basePrice }) => {
+export const getTotalPrice = ({ point, offersByType }) => {
+  const { type = '', offers = [], basePrice = 0 } = point || {};
   let offersPrice = 0;
+  const offersList = getAvailableOffers({ offerType: type, offersByType });
 
-  offersSelected?.forEach((offerSelected) => {
-    const price = getOffersByType(type).find(({ id }) => id === offerSelected)?.price || 0;
+  offers?.forEach((offer) => {
+    const price = offersList?.find(({ id }) => id === offer)?.price || 0;
     offersPrice += price;
   });
 
@@ -67,4 +68,20 @@ export const getDateInterval = (points) => {
   }
   return `${humanizePointDate(startDate)}&nbsp;&mdash;&nbsp;${humanizePointDate(endDate)}`;
 }
+
+export const getDestination = ({ name, destinations }) => {
+
+  const destination = destinations.find((item) => item.name === name);
+
+  if (!destination) {
+    return
+  }
+
+  return ({
+    destination
+  });
+}
+
+export const getAvailableOffers = ({ offerType, offersByType }) => (offersByType?.find(({ type }) => type === offerType)?.offers);
+
 

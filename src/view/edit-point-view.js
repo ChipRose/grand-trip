@@ -5,8 +5,8 @@ import he from 'he';
 import { capitalizeText } from '../util/common-util';
 import { getUtcDate } from '../util/point-util';
 import { humanizePointDateTime } from '../util/point-util';
-import { BLANK_POINT } from '../mock/const';
-import { getPointGeneralInfo, getDestination } from "../mock/point";
+import { BLANK_POINT, types } from '../mock/const';
+import { getDestination, getAvailableOffers } from '../util/point-util';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 const createEventTypeList = (pointState) => {
@@ -72,6 +72,7 @@ const createEventTimeBlock = (pointState) => {
 
 const createEventPriceBlock = (pointState) => {
   const { basePrice } = pointState;
+
   return (`
     <div class="event__field-group  event__field-group--price">
       <label class="event__label" for="event-price">
@@ -181,10 +182,12 @@ const createEditPointTemplate = (point = {}) => {
 
 export default class EditPointView extends AbstractStatefulView {
   #datepicker = null;
+  #generalInfo = null;
 
-  constructor(point = BLANK_POINT) {
+  constructor({ point = BLANK_POINT, generalInfo }) {
     super();
-    this._state = EditPointView.parsePointToState(point);
+    this.#generalInfo = generalInfo;
+    this._state = this.#parsePointToState(point);
     this.#setInnerHandlers();
   }
 
@@ -192,13 +195,15 @@ export default class EditPointView extends AbstractStatefulView {
     return createEditPointTemplate(this._state);
   }
 
-  static parsePointToState = (point) => ({
+  #parsePointToState = (point) => ({
     ...point,
-    ...getPointGeneralInfo(point.type),
+    types,
+    offersAvailable: getAvailableOffers({ offerType: point.type, offersByType: this.#generalInfo?.offersByType }),
+    destinations: this.#generalInfo?.destinations,
     isSubmitDisabled: !point.destination || !point.dateFrom || !point.dateTo ? 'disabled' : '',
   })
 
-  static parseStateToPoint = (state) => {
+  #parseStateToPoint = (state) => {
     const point = { ...state };
 
     delete point.offersAvailable;
@@ -219,7 +224,7 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   reset = (point) => {
-    this.updateElement(EditPointView.parsePointToState(point));
+    this.updateElement(this.#parsePointToState(point));
   }
 
   setCloseClickHandler = (callback) => {
@@ -271,7 +276,7 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.submitClick(EditPointView.parseStateToPoint(this._state));
+    this._callback.submitClick(this.#parseStateToPoint(this._state));
   }
 
   #formCloseHandler = (evt) => {
@@ -281,23 +286,25 @@ export default class EditPointView extends AbstractStatefulView {
 
   #formDeleteHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteClick(EditPointView.parseStateToPoint(this._state));
+    this._callback.deleteClick(this.#parseStateToPoint(this._state));
   }
 
   #typeChangeHandler = (evt) => {
     evt.preventDefault();
+    const type = evt.target.value;
 
     this.updateElement({
-      type: evt.target.value,
-      ...getPointGeneralInfo(evt.target.value),
+      type,
+      offersAvailable: getAvailableOffers({ offerType: type, offersByType: this.#generalInfo?.offersByType }),
       offers: []
     });
   }
 
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
+    const destination = getDestination({ name: evt.target.value, destinations: this.#generalInfo.destinations })
 
-    if (evt.target.value === '') {
+    if (evt.target.value === '' || !destination) {
       this.updateElement({
         destination: null,
         isSubmitDisabled: 'disabled'
@@ -306,7 +313,7 @@ export default class EditPointView extends AbstractStatefulView {
     }
 
     this.updateElement({
-      ...getDestination(evt.target.value),
+      ...destination,
       isSubmitDisabled: this._state.dateFrom && this._state.dateTo ? '' : 'disabled'
     });
   }
@@ -321,7 +328,7 @@ export default class EditPointView extends AbstractStatefulView {
       return
     }
 
-    this.updateElement({
+    this._setState({
       dateFrom: getUtcDate(dateFrom),
       dateTo: getUtcDate(dateTo),
       isSubmitDisabled: this._state.destination ? '' : 'disabled',

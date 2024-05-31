@@ -23,7 +23,8 @@ export default class BoardPresenter {
   #loadingComponent = new LoadingView();
 
   #pointsModel = null;
-  #filterModel = [];
+  #filterModel = null;
+  #generalInfoModel = null;
 
   #currentSortType = SortType.DEFALT;
   #currentFilterType = FilterType.DEFALT;
@@ -32,14 +33,17 @@ export default class BoardPresenter {
   #pointPresenter = new Map();
   #pointNewPresenter = null;
 
-  constructor({ boardContainer, pointsControlContainer, pointsModel, filterModel }) {
+  constructor({ boardContainer, pointsControlContainer, pointsModel, generalInfoModel, filterModel }) {
     this.#boardContainer = boardContainer;
     this.#pointsControlContainer = pointsControlContainer;
 
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
+    this.#generalInfoModel = generalInfoModel;
+    console.log(this.#generalInfoModel.generalInfo);
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#generalInfoModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
@@ -52,7 +56,7 @@ export default class BoardPresenter {
   }
 
   #renderInfoPanel = () => {
-    this.#infoComponent = new InfoView(this.#pointsModel.points);
+    this.#infoComponent = new InfoView({ points: this.#pointsModel.points, generalInfo: this.#generalInfoModel.generalInfo });
     render(this.#infoComponent, this.#pointsControlContainer, RenderPosition.AFTERBEGIN);
   }
 
@@ -63,7 +67,7 @@ export default class BoardPresenter {
   }
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter({ listContainer: this.#listComponent.element, changeData: this.#handleViewAction, changeMode: this.#handleModeChange });
+    const pointPresenter = new PointPresenter({ listContainer: this.#listComponent.element, changeData: this.#handleViewAction, changeMode: this.#handleModeChange, generalInfo: this.#generalInfoModel.generalInfo  });
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }
