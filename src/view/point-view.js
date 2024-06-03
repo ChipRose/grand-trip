@@ -1,10 +1,10 @@
-import he from 'he'
+import he from 'he';
 import AbstractView from '../framework/view/abstract-view';
 import { humanizePointDate, humanizePointTime, formatDurationTime, getAvailableOffers } from '../util/point-util';
 
 const createOffersListBlock = (pointState) => {
-  const { offersAvailable, offers } = pointState;
-  const checkedOffers = offersAvailable?.filter((offer) => offers.includes(offer.id));
+  const { offersAvailable, offers, isError } = pointState;
+  const checkedOffers = isError ? offersAvailable : offersAvailable?.filter((offer) => offers.includes(offer.id));
 
   if (!offers?.length) {
     return ('')
@@ -15,8 +15,10 @@ const createOffersListBlock = (pointState) => {
       ${checkedOffers?.map(({ title, price }) => (
     `<li class="event__offer">
         <span class="event__offer-title">${title}</span>
-        &plus;&euro;&nbsp;
-        <span class="event__offer-price">${price}</span>
+        ${price ? `
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${price}</span>
+        ` : ''}
       </li>`
   )).join('')}
     </ul>
@@ -71,17 +73,19 @@ const createPointTemplate = (pointState) => {
 
 export default class PointView extends AbstractView {
   #point = null;
+  #generalInfoModel = null;
   #generalInfo = null;
 
-  constructor({ point, generalInfo }) {
+  constructor({ point, generalInfoModel }) {
     super();
 
     this.#point = point;
-    this.#generalInfo = generalInfo;
+    this.#generalInfoModel = generalInfoModel;
+    this.#generalInfo = generalInfoModel.generalInfo;
   }
 
   get template() {
-    return createPointTemplate({ ...this.#point, offersAvailable: getAvailableOffers({ offerType: this.#point.type, offersByType: this.#generalInfo?.offersByType }) });
+    return createPointTemplate({ ...this.#point, offersAvailable: getAvailableOffers({ offerType: this.#point.type, offersByType: this.#generalInfo?.offersByType }), isError: this.#generalInfoModel.isError() });
   }
 
   setOpenClickHandler = (callback) => {

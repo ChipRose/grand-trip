@@ -1,13 +1,12 @@
 
 import Observable from "../framework/observable";
-import { UpdateType, Status } from "../mock/const";
+import { UpdateType } from "../mock/const";
 
 export default class GeneralInfoModel extends Observable {
   #destinations = [];
   #offersByType = [];
 
   #generalInfoApiService = null;
-  #status = Status.OK;
 
   constructor(generalInfoApiService) {
     super();
@@ -21,12 +20,12 @@ export default class GeneralInfoModel extends Observable {
     });
   }
 
-  get status() {
+  isError = () => {
     if (!this.#destinations?.length || !this.#offersByType?.length) {
-      return this.#status = Status.ERROR;
+      return true;
     }
 
-    return this.#status = Status.OK;
+    return false;
   }
 
   get offers() {

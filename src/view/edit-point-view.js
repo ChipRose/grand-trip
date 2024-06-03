@@ -19,7 +19,7 @@ const createEventTypeList = (pointState) => {
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle" value=${type} type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle" value=${type} type="checkbox"  ${isDisabled ? 'disabled' : ''}>
       <div class="event__type-list">
         <fieldset class="event__type-group">
           <legend class="visually-hidden">Event type</legend>
@@ -127,7 +127,7 @@ const createEventBlock = (pointState) => {
 }
 
 const createOffersBlock = (point) => {
-  const { offers, offersAvailable } = point;
+  const { offers, offersAvailable, isDisabled } = point;
   const isOfferChecked = ({ currentId, offers }) => (offers.includes(Number(currentId)) ? 'checked' : '');
 
   if (!offersAvailable?.length) {
@@ -140,11 +140,13 @@ const createOffersBlock = (point) => {
       <div class="event__available-offers">
         ${offersAvailable.map(({ id, title, price }) => (`
         <div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${id}" type="checkbox" name="event-offer-${id}" value="${id}" ${isOfferChecked({ currentId: id, offers })}>
-          <label class="event__offer-label" for="event-offer-${id}">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${isDisabled ? 'blocked' : id}" type="checkbox" name="${isDisabled ? '' : id}" value="${isDisabled ? '' : id}" ${isOfferChecked({ currentId: id, offers })}  ${isDisabled ? 'disabled' : ''}>
+          <label class="event__offer-label" for="event-offer-${isDisabled ? 'blocked' : id}">
             <span class="event__offer-title">${title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${price}</span>
+            ${price ? `
+              &plus;&euro;&nbsp;
+              <span class="event__offer-price">${price}</span>
+            ` : ''}
           </label>
         </div>
       `)).join('')}
@@ -193,10 +195,10 @@ export default class EditPointView extends AbstractStatefulView {
   #generalInfo = null;
   #isNew = false;
 
-  constructor({ point = BLANK_POINT, generalInfo, isNew }) {
+  constructor({ point = BLANK_POINT, generalInfoModel, isNew }) {
     super();
-    this.#generalInfo = generalInfo;
     this.#isNew = isNew;
+    this.#generalInfo = generalInfoModel.generalInfo;
 
     this._state = this.#parsePointToState(point);
     this.#setInnerHandlers();

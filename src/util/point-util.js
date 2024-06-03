@@ -82,4 +82,10 @@ export const getDestination = ({ name, destinations }) => {
   });
 }
 
-export const getAvailableOffers = ({ offerType, offersByType }) => (offersByType?.find(({ type }) => type === offerType)?.offers) || [];
+export const getAvailableOffers = ({ offerType, offersByType }) => {
+  if (!offersByType?.length) {
+    return ([{ title: 'Offers can\'t be loaded' }]);
+  }
+
+  return offersByType?.find(({ type }) => type === offerType)?.offers || [];
+}

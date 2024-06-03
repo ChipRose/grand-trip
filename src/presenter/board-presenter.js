@@ -1,7 +1,8 @@
 import { render, remove } from '../framework/render';
+import UiBlocker from "../framework/ui-blocker/ui-blocker";
 import { filtering } from "../util/filter-util";
 import { sorting } from "../util/sorting-util";
-import { SortType, UserAction, UpdateType, FilterType, RenderPosition } from "../mock/const";
+import { SortType, UserAction, UpdateType, FilterType, RenderPosition, TimeLimit } from "../mock/const";
 import BoardView from "../view/board-view";
 import SortView from "../view/sort-view";
 import ListView from "../view/list-view";
@@ -21,6 +22,7 @@ export default class BoardPresenter {
   #boardComponent = new BoardView();
   #listComponent = new ListView();
   #loadingComponent = new LoadingView();
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   #pointsModel = null;
   #filterModel = null;
@@ -40,7 +42,6 @@ export default class BoardPresenter {
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
     this.#generalInfoModel = generalInfoModel;
-    console.log(this.#generalInfoModel.generalInfo);
 
     this.#pointsModel.addObserver(this.#handleModelEvent);
     this.#generalInfoModel.addObserver(this.#handleModelEvent);
@@ -107,7 +108,7 @@ export default class BoardPresenter {
     this.#renderInfoPanel();
     this.#renderSort();
     render(this.#listComponent, this.#boardComponent.element);
-    this.#pointNewPresenter = new PointNewPresenter({ listComponent: this.#listComponent.element, changeData: this.#handleViewAction, generalInfo: this.#generalInfoModel.generalInfo })
+    this.#pointNewPresenter = new PointNewPresenter({ listComponent: this.#listComponent.element, changeData: this.#handleViewAction, generalInfoModel: this.#generalInfoModel })
     this.#renderPoints(points);
   }
 
@@ -152,6 +153,8 @@ export default class BoardPresenter {
   }
 
   #handleViewAction = async ({ actionType, updateType, update }) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointPresenter.get(update.id).setSaving();
@@ -178,6 +181,8 @@ export default class BoardPresenter {
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   }
 
   #handleModeChange = () => {
@@ -206,5 +211,9 @@ export default class BoardPresenter {
       filter: FilterType.EVERYTHING
     });
     this.#pointNewPresenter.init(callback);
+
+    if (this.#generalInfoModel.isError()) {
+      this.#pointNewPresenter.setDisabling();
+    }
   }
 }

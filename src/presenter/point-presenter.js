@@ -1,6 +1,6 @@
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
-import { Mode, UpdateType, UserAction, Status } from "../mock/const";
+import { Mode, UpdateType, UserAction } from "../mock/const";
 import { render, replace, remove } from "../framework/render";
 import { getTotalPrice } from "../util/point-util";
 
@@ -47,7 +47,7 @@ export default class PointPresenter {
   }
 
   #handleOpenClick = () => {
-    if (this.#generalInfoModel.status === Status.ERROR) {
+    if (this.#generalInfoModel.isError()) {
       this.setAborting();
       return;
     }
@@ -95,10 +95,9 @@ export default class PointPresenter {
     this.#point = point;
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
-    const generalInfo = this.#generalInfoModel.generalInfo;
 
-    this.#pointComponent = new PointView({ point, generalInfo });
-    this.#pointEditComponent = new EditPointView({ point, generalInfo, isNew: false });
+    this.#pointComponent = new PointView({ point, generalInfoModel: this.#generalInfoModel });
+    this.#pointEditComponent = new EditPointView({ point, generalInfoModel: this.#generalInfoModel, isNew: false });
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);

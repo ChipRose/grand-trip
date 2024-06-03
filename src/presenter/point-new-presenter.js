@@ -8,12 +8,12 @@ export default class PointNewPresenter {
 
   #changeData = null;
   #destroyCallback = null;
-  #generalInfo = null;
+  #generalInfoModel = null;
 
-  constructor({ listComponent, changeData, generalInfo }) {
+  constructor({ listComponent, changeData, generalInfoModel }) {
     this.#listComponent = listComponent;
     this.#changeData = changeData;
-    this.#generalInfo = generalInfo;
+    this.#generalInfoModel = generalInfoModel;
   }
 
   #escKeyDownHandler = (evt) => {
@@ -41,7 +41,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#pointEditComponent = new EditPointView({ generalInfo: this.#generalInfo, isNew: true });
+    this.#pointEditComponent = new EditPointView({ generalInfoModel: this.#generalInfoModel, isNew: true });
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
     this.#pointEditComponent.setCloseClickHandler(this.#handleDeleteClick);
@@ -66,6 +66,17 @@ export default class PointNewPresenter {
       isDisabled: true,
       isSaving: true
     })
+  }
+
+  setDisabling = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateElement({
+        isDisabled: true,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+
   }
 
   setAborting = () => {

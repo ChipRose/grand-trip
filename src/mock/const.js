@@ -15,11 +15,6 @@ export const BLANK_POINT = {
 
 export const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
-export const Status = {
-    ERROR:'ERROR',
-    OK: 'OK'
-}
-
 export const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
@@ -83,6 +78,11 @@ export const Method = {
 };
 
 export const ApiInfo = {
-  AUTHORIZATION: 'Basic vhgiufggvksfvjyfwe72ryiowe',
+  AUTHORIZATION: 'Basic vhgiufggfwe72ryiowe',
   END_POINT: 'https://17.ecmascript.htmlacademy.pro/big-trip',
+};
+
+export const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
 };
