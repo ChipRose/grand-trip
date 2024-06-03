@@ -21,7 +21,14 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-
+    - name: Set up key
+      run: set -eu
+    - name: Choose directory
+      run: mkdir "$HOME/.ssh"
+    - name: Key
+      run: echo "${{ secrets.BUILD }}" > "$HOME/.ssh/BUILD"
+    - name: Finish set key
+      run: chmod 600 "$HOME/.ssh/BUILD"
     - name: Build
       run: |
         npm ci
