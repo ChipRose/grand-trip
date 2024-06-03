@@ -26,7 +26,7 @@ export default class GeneralInfoModel extends Observable {
       return this.#status = Status.ERROR;
     }
 
-    return this.#status= Status.OK;
+    return this.#status = Status.OK;
   }
 
   get offers() {

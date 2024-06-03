@@ -13,7 +13,6 @@ export default class PointPresenter {
   #changeData = null;
   #changeMode = null;
   #point = null;
-  #generalInfo = null;
   #generalInfoModel = null;
 
   #mode = Mode.DEFAULT;
@@ -23,7 +22,6 @@ export default class PointPresenter {
     this.#changeData = changeData;
     this.#changeMode = changeMode;
     this.#generalInfoModel = generalInfoModel;
-    this.#generalInfo = generalInfoModel.generalInfo;
   }
 
   #replacePointToForm = () => {
@@ -83,7 +81,7 @@ export default class PointPresenter {
   #handleFormSubmit = (update) => {
     const destinationChangeFlag = this.#point?.destination?.name !== update?.destination?.name;
     const datesChangeFlag = this.#point?.dateFrom !== update?.dateFrom || this.#point?.dateTo !== update?.dateTo;
-    const priceChangingFlag = getTotalPrice({ point: this.#point, offersByType: this.#generalInfo?.offers });
+    const priceChangingFlag = getTotalPrice({ point: this.#point, offersByType: this.#generalInfoModel?.offers });
     const isMinorUpdate = destinationChangeFlag || datesChangeFlag || priceChangingFlag;
 
     this.#changeData({
@@ -97,9 +95,10 @@ export default class PointPresenter {
     this.#point = point;
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
+    const generalInfo = this.#generalInfoModel.generalInfo;
 
-    this.#pointComponent = new PointView({ point, generalInfo: this.#generalInfo });
-    this.#pointEditComponent = new EditPointView({ point, generalInfo: this.#generalInfo, isNew: false });
+    this.#pointComponent = new PointView({ point, generalInfo });
+    this.#pointEditComponent = new EditPointView({ point, generalInfo, isNew: false });
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
