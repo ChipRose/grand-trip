@@ -41,7 +41,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#pointEditComponent = new EditPointView({ generalInfo: this.#generalInfo });
+    this.#pointEditComponent = new EditPointView({ generalInfo: this.#generalInfo, isNew: true });
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
     this.#pointEditComponent.setCloseClickHandler(this.#handleDeleteClick);

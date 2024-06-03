@@ -34,14 +34,18 @@ const sortTimeDown = (pointA, pointB) => {
 };
 
 
-const sort = {
+export const sort = {
   [SortType.DEFALT]: (points) => points.sort(sortDateDown),
-  [SortType.EVENT]: (points) => points,
+  [SortType.EVENT]: null,
   [SortType.TIME]: (points) => points.sort(sortTimeDown),
   [SortType.PRICE]: (points) => points.sort(sortPriceDown),
-  [SortType.OFFERS]: (points) => points,
+  [SortType.OFFERS]: null,
 };
 
 export const sorting = ({ points, sortType }) => {
+  if (typeof sort[sortType] !== 'function') {
+    return;
+  }
+
   return sort[sortType](points) || null;
 };

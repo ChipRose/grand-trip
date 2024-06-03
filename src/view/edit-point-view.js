@@ -101,7 +101,15 @@ const createGalleryList = (pictures) => {
 }
 
 const createEventBlock = (pointState) => {
-  const { isSubmitDisabled, isSaving, isDeleting, isDisabled } = pointState;
+  const { isSubmitDisabled, isSaving, isDeleting, isDisabled, isNew } = pointState;
+
+  const getResetButtonState = ({ isNew, isDeleting }) => {
+    if (isNew) {
+      return 'Cancel';
+    }
+
+    return isDeleting ? 'Deleting...' : 'Delete';
+  }
 
   return (`
     <header class="event__header">
@@ -110,7 +118,7 @@ const createEventBlock = (pointState) => {
       ${createEventTimeBlock(pointState)}
       ${createEventPriceBlock(pointState)}
       <button class="event__save-btn  btn  btn--blue" ${isSubmitDisabled || isDisabled ? 'disabled' : ''} type="submit">${isSaving ? 'Saving...' : 'Save'}</button>
-      <button class="event__reset-btn" type="reset">${isDeleting ? 'Deleting...' : 'Delete'}</button>
+      <button class="event__reset-btn" type="reset">${getResetButtonState({ isDeleting, isNew })}</button>
       <button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>
@@ -183,10 +191,13 @@ const createEditPointTemplate = (point = {}) => {
 export default class EditPointView extends AbstractStatefulView {
   #datepicker = null;
   #generalInfo = null;
+  #isNew = false;
 
-  constructor({ point = BLANK_POINT, generalInfo }) {
+  constructor({ point = BLANK_POINT, generalInfo, isNew }) {
     super();
     this.#generalInfo = generalInfo;
+    this.#isNew = isNew;
+
     this._state = this.#parsePointToState(point);
     this.#setInnerHandlers();
   }
@@ -204,6 +215,7 @@ export default class EditPointView extends AbstractStatefulView {
     isDisabled: false,
     isSaving: false,
     isDeleting: false,
+    isNew: this.#isNew
   })
 
   #parseStateToPoint = (state) => {
@@ -216,6 +228,7 @@ export default class EditPointView extends AbstractStatefulView {
     delete point.isDisabled;
     delete point.isSaving;
     delete point.isDeleting;
+    delete point.isNew;
 
     return point;
   }

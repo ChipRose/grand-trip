@@ -92,7 +92,7 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView({ point, generalInfo: this.#generalInfo });
-    this.#pointEditComponent = new EditPointView({ point, generalInfo: this.#generalInfo });
+    this.#pointEditComponent = new EditPointView({ point, generalInfo: this.#generalInfo, isNew: false });
 
     this.#pointComponent.setOpenClickHandler(this.#handleOpenClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
