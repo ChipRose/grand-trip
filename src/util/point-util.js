@@ -82,6 +82,4 @@ export const getDestination = ({ name, destinations }) => {
   });
 }
 
-export const getAvailableOffers = ({ offerType, offersByType }) => (offersByType?.find(({ type }) => type === offerType)?.offers);
-
-
+export const getAvailableOffers = ({ offerType, offersByType }) => (offersByType?.find(({ type }) => type === offerType)?.offers) || [];

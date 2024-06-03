@@ -66,8 +66,8 @@ export default class BoardPresenter {
     render(this.#sortComponent, this.#boardComponent.element);
   }
 
-  #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter({ listContainer: this.#listComponent.element, changeData: this.#handleViewAction, changeMode: this.#handleModeChange, generalInfo: this.#generalInfoModel.generalInfo });
+  #renderPoint = async (point) => {
+    const pointPresenter = new PointPresenter({ listContainer: this.#listComponent.element, changeData: this.#handleViewAction, changeMode: this.#handleModeChange, generalInfoModel: this.#generalInfoModel });
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   }

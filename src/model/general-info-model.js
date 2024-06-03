@@ -1,12 +1,13 @@
 
 import Observable from "../framework/observable";
-import { UpdateType } from "../mock/const";
+import { UpdateType, Status } from "../mock/const";
 
 export default class GeneralInfoModel extends Observable {
   #destinations = [];
   #offersByType = [];
 
   #generalInfoApiService = null;
+  #status = Status.OK;
 
   constructor(generalInfoApiService) {
     super();
@@ -20,17 +21,26 @@ export default class GeneralInfoModel extends Observable {
     });
   }
 
+  get status() {
+    if (!this.#destinations?.length || !this.#offersByType?.length) {
+      return this.#status = Status.ERROR;
+    }
+
+    return this.#status= Status.OK;
+  }
+
   get offers() {
-    return this.#offersByType
+    return this.#offersByType;
   }
 
   init = async () => {
     try {
       this.#destinations = await this.#generalInfoApiService.destinations;
       this.#offersByType = await this.#generalInfoApiService.offers;
-    } catch {
+    } catch (err) {
       this.#destinations = [];
       this.#offersByType = [];
+      throw new Error('Can\'t load general info', err);
     }
 
     this._notify(UpdateType.MAJOR, null);

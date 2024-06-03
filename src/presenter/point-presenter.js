@@ -1,6 +1,6 @@
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
-import { Mode, UpdateType, UserAction } from "../mock/const";
+import { Mode, UpdateType, UserAction, Status } from "../mock/const";
 import { render, replace, remove } from "../framework/render";
 import { getTotalPrice } from "../util/point-util";
 
@@ -14,14 +14,16 @@ export default class PointPresenter {
   #changeMode = null;
   #point = null;
   #generalInfo = null;
+  #generalInfoModel = null;
 
   #mode = Mode.DEFAULT;
 
-  constructor({ listContainer, changeData, changeMode, generalInfo }) {
+  constructor({ listContainer, changeData, changeMode, generalInfoModel }) {
     this.#listContainer = listContainer;
     this.#changeData = changeData;
     this.#changeMode = changeMode;
-    this.#generalInfo = generalInfo;
+    this.#generalInfoModel = generalInfoModel;
+    this.#generalInfo = generalInfoModel.generalInfo;
   }
 
   #replacePointToForm = () => {
@@ -47,6 +49,11 @@ export default class PointPresenter {
   }
 
   #handleOpenClick = () => {
+    if (this.#generalInfoModel.status === Status.ERROR) {
+      this.setAborting();
+      return;
+    }
+
     this.#replacePointToForm();
   }
 

@@ -15,6 +15,11 @@ export const BLANK_POINT = {
 
 export const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 
+export const Status = {
+    ERROR:'ERROR',
+    OK: 'OK'
+}
+
 export const RenderPosition = {
   BEFOREBEGIN: 'beforebegin',
   AFTERBEGIN: 'afterbegin',
