@@ -333,17 +333,9 @@ export default class EditPointView extends AbstractStatefulView {
       return;
     }
 
-    if (!destination) {
-      this.updateElement({
-        destination: { title: evt.target.value, description: '', pictures: [] },
-        isSubmitDisabled: false
-      })
-      return;
-    }
-
     this.updateElement({
       ...destination,
-      isSubmitDisabled: !this._state.dateFrom && !this._state.dateTo
+      isSubmitDisabled: !this._state.dateFrom && !this._state.dateTo || !destination.description
     });
   }
 
