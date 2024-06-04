@@ -5,7 +5,7 @@ import he from 'he';
 import { capitalizeText } from '../util/common-util';
 import { getUtcDate } from '../util/point-util';
 import { humanizePointDateTime } from '../util/point-util';
-import { BLANK_POINT, types } from '../mock/const';
+import { BLANK_POINT, types } from '../util/const';
 import { getDestination, getAvailableOffers } from '../util/point-util';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 

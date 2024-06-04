@@ -1,6 +1,6 @@
 import { remove, render } from "../framework/render";
 import EditPointView from "../view/edit-point-view";
-import { UserAction, UpdateType, RenderPosition } from "../mock/const";
+import { UserAction, UpdateType, RenderPosition } from "../util/const";
 
 export default class PointNewPresenter {
   #listComponent = null;

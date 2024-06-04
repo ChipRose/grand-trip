@@ -1,6 +1,6 @@
 
 import Observable from "../framework/observable";
-import { UpdateType } from "../mock/const";
+import { UpdateType } from "../util/const";
 
 export default class GeneralInfoModel extends Observable {
   #destinations = [];

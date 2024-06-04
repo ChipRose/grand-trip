@@ -2,7 +2,7 @@ import { render, remove } from '../framework/render';
 import UiBlocker from "../framework/ui-blocker/ui-blocker";
 import { filtering } from "../util/filter-util";
 import { sorting } from "../util/sorting-util";
-import { SortType, UserAction, UpdateType, FilterType, RenderPosition, TimeLimit } from "../mock/const";
+import { SortType, UserAction, UpdateType, FilterType, RenderPosition, TimeLimit } from "../util/const";
 import BoardView from "../view/board-view";
 import SortView from "../view/sort-view";
 import ListView from "../view/list-view";

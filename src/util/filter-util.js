@@ -1,4 +1,4 @@
-import { FilterType } from "../mock/const";
+import { FilterType } from "./const";
 import { isPastEvent, isFutureEvent } from "./point-util";
 
 export const filter = {

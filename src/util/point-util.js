@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(duration).extend(utc);
-import { NoPointMessage, DateFormat } from "../mock/const";
+import { NoPointMessage, DateFormat } from "./const";
 import { getNullFormat } from "./common-util";
 
 export const humanizePointDate = (date) => dayjs(date).format(DateFormat.DATE) || '';

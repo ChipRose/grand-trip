@@ -1,4 +1,4 @@
-import { Method } from "../mock/const";
+import { Method } from "../util/const";
 import ApiService from '../framework/api-service';
 
 export default class PointsApiService extends ApiService {

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { SortType } from "../mock/const";
+import { SortType } from "./const";
 
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {

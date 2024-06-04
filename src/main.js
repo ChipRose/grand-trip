@@ -1,5 +1,5 @@
 import { render } from './framework/render';
-import { ApiInfo } from './mock/const';
+import { ApiInfo } from './util/const';
 import PointsModel from './model/points-model';
 import FilterModel from './model/filter-model';
 import NewPointButtonView from './view/new-point-button-view';

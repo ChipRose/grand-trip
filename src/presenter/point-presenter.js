@@ -1,6 +1,6 @@
 import PointView from "../view/point-view";
 import EditPointView from "../view/edit-point-view";
-import { Mode, UpdateType, UserAction } from "../mock/const";
+import { Mode, UpdateType, UserAction } from "../util/const";
 import { render, replace, remove } from "../framework/render";
 import { getTotalPrice } from "../util/point-util";
 
