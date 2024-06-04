@@ -325,12 +325,12 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     const destination = getDestination({ name: evt.target.value, destinations: this.#generalInfo.destinations })
 
-    if (evt.target.value === '' || !destination) {
+    if (evt.target.value === ''|| !destination) {
       this.updateElement({
         destination: null,
         isSubmitDisabled: true
       })
-      return
+      return;
     }
 
     this.updateElement({
@@ -369,14 +369,15 @@ export default class EditPointView extends AbstractStatefulView {
   }
 
   #basePriceInputNotNumberHandler = (evt) => {
-    if (isNaN(evt.key) && evt.key !== 'Backspace') {
+    if (isNaN(evt.key) && evt.code !== 'Backspace' && evt.code !== 'ArrowLeft' && evt.code !== 'ArrowRight') {
       evt.preventDefault();
     }
   }
 
   #basePriceChangeHandler = (evt) => {
+    const price = Number(evt.target.value.trim().replace(/\s/g, ''));
     this._setState({
-      basePrice: Number(evt.target.value),
+      basePrice: typeof price === 'number' ? price : 0,
     });
   }
 }

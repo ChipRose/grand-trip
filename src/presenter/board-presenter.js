@@ -131,7 +131,6 @@ export default class BoardPresenter {
   }
 
   #handleModelEvent = (updateType, data) => {
-    console.log({ updateType, data });
     switch (updateType) {
       case UpdateType.PATCH:
         this.#pointPresenter.get(data.id).init(data);

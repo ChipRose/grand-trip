@@ -55,7 +55,6 @@ export default class PointsModel extends Observable {
   }
 
   addPoint = async ({ updateType, update }) => {
-    console.log({ updateType, update });
     try {
       const response = await this.#pointsApiService.addPoint(update);
       const newPoint = this.#adaptToClient(response);
