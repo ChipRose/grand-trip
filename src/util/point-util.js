@@ -70,7 +70,6 @@ export const getDateInterval = (points) => {
 }
 
 export const getDestination = ({ name, destinations }) => {
-
   const destination = destinations.find((item) => item.name === name) || { name, description: '', pictures: [] };
 
   return ({
