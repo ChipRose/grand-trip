@@ -325,10 +325,18 @@ export default class EditPointView extends AbstractStatefulView {
     evt.preventDefault();
     const destination = getDestination({ name: evt.target.value, destinations: this.#generalInfo.destinations })
 
-    if (evt.target.value === ''|| !destination) {
+    if (evt.target.value === '') {
       this.updateElement({
         destination: null,
         isSubmitDisabled: true
+      })
+      return;
+    }
+
+    if (!destination) {
+      this.updateElement({
+        destination: { title: evt.target.value, description: '', pictures: [] },
+        isSubmitDisabled: false
       })
       return;
     }
