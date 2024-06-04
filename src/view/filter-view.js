@@ -1,8 +1,9 @@
 import AbstractView from '../framework/view/abstract-view';
 
 const createFiltersList = ({ filters, currentFilter = 'everything' }) => {
+
   return (`
-    ${filters.map(({ type }) => (`
+    ${filters.map(({ type, count }) => (`
       <div class="trip-filters__filter">
         <input
           class="trip-filters__filter-input  visually-hidden"
@@ -10,6 +11,7 @@ const createFiltersList = ({ filters, currentFilter = 'everything' }) => {
           type="radio"
           name="trip-filter"
           value=${type}
+          ${count === 0 ? 'disabled' : ''}
           ${type === currentFilter ? 'checked' : ''}>
         <label class="trip-filters__filter-label" for="filter-${type}">${type}</label>
         </div>
